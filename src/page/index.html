@@ -17,9 +17,14 @@
     <div id="app">
         <header>
             <h1>Line Counter</h1>
-            <button id="select-file">Select File</button>
-            <button id="select-folder">Select Folder</button>
-            <button id="export-data">Export Data</button>
+            <div class="left-buttons">
+                <button id="select-file">Select File</button>
+                <button id="select-folder">Select Folder</button>
+            </div>
+            <h2 id="currentfolder"></h2>
+            <div class="button-container">
+                <button id="export-data">Export Data</button>
+            </div>
         </header>
         <main>
             <aside id="folder-tree">
@@ -31,6 +36,7 @@
             <section id="content">
                 <div id="totals">
                     <h2>Totals</h2>
+                    <p>Files: <p id="filecount">0</p></p>
                     <p>Lines: <p id="linecount">0</p></p>
                     <p>Words: <p id="wordcount">0</p></p>
                     <p>Characters: <p id="charactercount">0</p></p>

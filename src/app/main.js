@@ -31,7 +31,7 @@ ipcMain.handle('selectFolder', async () => {
     return result.filePaths[0];
 });
 
-ipcMain.handle('selectFile', async () => {
+ipcMain.handle('selectAndReadFile', async () => {
     let lineCount = 0;
     let wordCount = 0;
     let characterCount = 0;
@@ -120,24 +120,35 @@ ipcMain.handle('readFolder', async (_, folderPath) => {
     };
 
     const readDir = async (dir, baseDir) => {
-        const items = fs.readdirSync(dir);
-        for (const file of items) {
-            const fullPath = path.join(dir, file);
+        const items = fs.readdirSync(dir, { withFileTypes: true }); // Use withFileTypes to simplify
+        for (const item of items) {
+            const fullPath = path.join(dir, item.name);
             const relativePath = path.relative(baseDir, fullPath);
 
-            if (fs.lstatSync(fullPath).isDirectory()) {
-                files.push({ path: relativePath, type: 'folder' });
-                await readDir(fullPath, baseDir); // Recursively read subdirectories
-            } else {
-                const fileStats = await readFileStats(fullPath, baseDir);
-                files.push(fileStats);
+            try {
+                if (item.isDirectory()) {
+                    files.push({ path: relativePath, type: 'folder' });
+                    await readDir(fullPath, baseDir); // Recursively read subdirectories
+                } else if (item.isFile()) {
+                    const fileStats = await readFileStats(fullPath, baseDir);
+                    files.push(fileStats);
+                }
+            } catch (err) {
+                console.error(`Error processing ${fullPath}:`, err.message);
+                // Skip problematic files or directories
             }
         }
     };
 
-    await readDir(folderPath, folderPath);
-    return files;
+    try {
+        await readDir(folderPath, folderPath);
+        return files;
+    } catch (err) {
+        console.error('Error reading folder:', err.message);
+        throw err; // Re-throw the error to the renderer for feedback
+    }
 });
+
 
 ipcMain.handle('isFile', async (_, filePath, folderPath) => {
     try {

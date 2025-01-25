@@ -4,6 +4,8 @@ const treeView = document.getElementById('tree-view');
 const linecount = document.getElementById('linecount');
 const wordcount = document.getElementById('wordcount');
 const charactercount = document.getElementById('charactercount');
+const filecount = document.getElementById('filecount');
+const currentfolder = document.getElementById('currentfolder');
 var folderPath;
 let filesAndFolders
 
@@ -178,28 +180,29 @@ async function updatestats(a, f) {
                 console.error(`Path not found: ${f}`);
             }
 
-
-            console.log(fullfilepath, lines, words, characters);
-
             // Update counts
             const currentlinecount = parseInt(linecount.innerHTML) || 0;
             const currentwordcount = parseInt(wordcount.innerHTML) || 0;
             const currentcharactercount = parseInt(charactercount.innerHTML) || 0;
+            const currentfilecount = parseInt(filecount.innerHTML) || 0;
 
             if (a) {
                 linecount.innerHTML = currentlinecount + lines;
                 wordcount.innerHTML = currentwordcount + words;
                 charactercount.innerHTML = currentcharactercount + characters;
+                filecount.innerHTML = currentfilecount + 1; // Increment file count
             } else {
                 linecount.innerHTML = currentlinecount - lines;
                 wordcount.innerHTML = currentwordcount - words;
                 charactercount.innerHTML = currentcharactercount - characters;
+                filecount.innerHTML = currentfilecount - 1; // Decrement file count
             }
         }
     }
 }
 
 // Recursive function to process files and folders
+
 async function arfile(itemPath, isChecked, itemType) {
     try {
         if (isChecked && itemType === 'folder') {
@@ -250,6 +253,7 @@ async function arfile(itemPath, isChecked, itemType) {
     }
 }
 
+
 searchBar.addEventListener('input', () => {
     const searchTerm = searchBar.value.toLowerCase();
     const filteredItems = filesAndFolders.filter(item =>
@@ -263,27 +267,44 @@ document.getElementById('select-folder').addEventListener('click', async () => {
     if (!folderPath) {
         return;
     }
+    currentfolder.innerHTML = `Scanning: <code>${folderPath}</code>`;
     const files = await window.electron.readFolder(folderPath);
     filesAndFolders = files;
     rendertree(filesAndFolders);
+    
+    const totalItems = filesAndFolders.length;
+    const chunkSize = 1500;
+
+    // filecount.innerHTML = totalItems;
     linecount.innerHTML = 0;
     wordcount.innerHTML = 0;
     charactercount.innerHTML = 0;
-    await updatestats(true, filesAndFolders);
+
+    if (totalItems > chunkSize) {
+        for (let i = 0; i < totalItems; i += chunkSize) {
+            const chunk = filesAndFolders.slice(i, i + chunkSize);
+            console.log("chnk", chunk);
+            await updatestats(true, chunk); // Update stats for the current chunk
+        }
+    }
+    else {
+        await updatestats(true, filesAndFolders);
+    }
 });
 
 document.getElementById('select-file').addEventListener('click', async () => {
-    const filepath = await window.electron.selectFile();
+    const filepath = await window.electron.selectAndReadFile();
     if (!filepath) {
         return;
     }
-    console.log('select file', filepath.path);
+    currentfolder.innerHTML = `Scanning: <code>'${filepath.path}'</code>`;
     filesAndFolders = filepath;
     rendertree(filepath);
     linecount.innerHTML = 0;
     wordcount.innerHTML = 0;
     charactercount.innerHTML = 0;
     await updatestats(true, filepath.path);
+    
 });
 
 document.getElementById('export-data').addEventListener('click', async () => {
