@@ -6,8 +6,12 @@ const wordcount = document.getElementById('wordcount');
 const charactercount = document.getElementById('charactercount');
 const filecount = document.getElementById('filecount');
 const currentfolder = document.getElementById('currentfolder');
+const displaylineorfile = document.getElementById('displaylineorfile');
+
 var folderPath;
-let filesAndFolders
+var filesAndFolders
+var piedata = {};
+var lineorfile = 'lines';
 
 // Function to show an alert
 function sendalert(message) {
@@ -23,6 +27,20 @@ function sendalert(message) {
 
 function closeModal() {
     document.getElementById('custom-alert').style.display = 'none';
+}
+
+// Recursive function to set the states of all children
+function setChildrenState(folder, isChecked) {
+    const children = getchildren(folder);
+    children.forEach(child => {
+        checkboxStates[child.path] = isChecked; // Update state in the global object
+        const checkbox = document.getElementById(child.path);
+        if (checkbox) checkbox.checked = isChecked; // Update UI if checkbox exists
+
+        if (child.type === 'folder') {
+            setChildrenState(child.path, isChecked); // Recursively handle nested folders
+        }
+    });
 }
 
 // Render the tree And adds event listeners for checkboxes
@@ -86,7 +104,6 @@ function rendertree(data) {
         });
     }
 }
-
 // Get all children of a folder
 
 function getchildren(folder) {
@@ -134,7 +151,7 @@ async function updatestats(a, f) {
         if (filesAndFolders.path) {
             var isFile = true;
         }
-        else{
+        else {
             var isFile = await window.electron.isFile(f, folderPath);
         }
 
@@ -158,12 +175,14 @@ async function updatestats(a, f) {
                 var lines = filesAndFolders.lines;
                 var words = filesAndFolders.words;
                 var characters = filesAndFolders.characters;
+                var extension = filesAndFolders.fileExtension;
             }
-            else {              
+            else {
                 var fileData = filesAndFolders.find(item => item.path === f);
                 var lines = filesAndFolders.find(item => item.path === f).lines;
                 var words = filesAndFolders.find(item => item.path === f).words;
                 var characters = filesAndFolders.find(item => item.path === f).characters;
+                var extension = filesAndFolders.find(item => item.path === f).fileExtension;
             }
             if (fileData && !fileData.lines) {
                 fileData.lines = lines;
@@ -191,11 +210,34 @@ async function updatestats(a, f) {
                 wordcount.innerHTML = currentwordcount + words;
                 charactercount.innerHTML = currentcharactercount + characters;
                 filecount.innerHTML = currentfilecount + 1; // Increment file count
+                if (extension in piedata) {
+                    if (lineorfile === 'lines') {
+                        piedata[extension] += lines;
+                    }
+                    else{
+                        piedata[extension] += 1;
+                    }
+                } else {
+                    if (lineorfile === 'lines') {
+                        piedata[extension] = lines;
+                    }
+                    else{
+                        piedata[extension] = 1;
+                    }
+                }
+                updatepiechart(piedata);
             } else {
                 linecount.innerHTML = currentlinecount - lines;
                 wordcount.innerHTML = currentwordcount - words;
                 charactercount.innerHTML = currentcharactercount - characters;
                 filecount.innerHTML = currentfilecount - 1; // Decrement file count
+                if (lineorfile === 'lines') {
+                    piedata[extension] -= lines;
+                }
+                else{
+                    piedata[extension] -= 1;
+                }
+                updatepiechart(piedata);
             }
         }
     }
@@ -253,6 +295,75 @@ async function arfile(itemPath, isChecked, itemType) {
     }
 }
 
+let pieChart; // Declare a variable to hold the chart instance
+
+function updatepiechart(data) {
+    const ctx = document.getElementById('pie-chart').getContext('2d');
+    if (pieChart) {
+        pieChart.data.labels = Object.keys(data);
+        pieChart.data.datasets[0].data = Object.values(data);
+        pieChart.update();
+    } else {
+        pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(data),
+                datasets: [{
+                    data: Object.values(data),
+                    backgroundColor: [
+                        '#007bff', '#ffc107', '#28a745', '#dc3545', '#17a2b8',
+                        '#6c757d', '#6610f2', '#fd7e14', '#ff6347', '#8a2be2', '#00bfff', 
+                        '#ff1493', '#ff4500', '#f0e68c', '#32cd32', '#ff8c00', '#d2691e',
+                        '#2e8b57', '#d3d3d3', '#4b0082', '#ffff00', '#98fb98', '#ff00ff', 
+                        '#00ff00', '#ffd700', '#ff69b4', '#ff4500', '#8b0000', '#4682b4', 
+                        '#228b22', '#ff6347', '#adff2f', '#8b4513', '#4b0082', '#e9967a', 
+                        '#b0c4de', '#ffb6c1', '#000080', '#ff0000', '#00ff7f', '#c71585',
+                        '#dda0dd', '#e6e6fa', '#800080', '#ff6347', '#ff1493', '#7fff00',
+                        '#f08080', '#f4a460', '#00008b', '#ff8c00', '#ff4500', '#d3d3d3',
+                        '#2e8b57', '#ff00ff', '#e9967a', '#483d8b', '#bdb76b', '#9acd32', 
+                        '#f0f8ff', '#6a5acd', '#ff1493', '#00ffff', '#c71585', '#f4a460',
+                        '#20b2aa', '#98fb98', '#ff4500', '#9b30ff', '#ff6347', '#add8e6',
+                        '#f8f8ff', '#d2691e', '#32cd32', '#ff6347', '#ffb6c1', '#4682b4', 
+                        '#228b22', '#ff0000', '#c71585', '#dda0dd', '#e6e6fa', '#800080',
+                        '#ff00ff', '#ff6347', '#ff1493', '#7fff00', '#f08080', '#f4a460',
+                        '#00008b', '#ff8c00', '#ff4500', '#d3d3d3', '#2e8b57', '#ff00ff'
+                    ],
+                    borderColor: '#1f1f1f',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'left',
+                        labels: {
+                            color: '#e0e0e0',
+                            font: { size: 14 },
+                            padding: 20,
+                            boxWidth: 20, // Adjusts the size of the legend item
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                const label = tooltipItem.label;
+                                if (lineorfile === 'lines') {
+                                    var percentage = ((tooltipItem.raw / linecount.innerHTML) * 100).toFixed(2);
+                                    return `${label}: ${percentage}% (${tooltipItem.raw} lines)`;
+                                }
+                                else{
+                                    var percentage = ((tooltipItem.raw / filecount.innerHTML) * 100).toFixed(2);
+                                    return `${label}: ${percentage}% (${tooltipItem.raw} files)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
 
 searchBar.addEventListener('input', () => {
     const searchTerm = searchBar.value.toLowerCase();
@@ -270,8 +381,9 @@ document.getElementById('select-folder').addEventListener('click', async () => {
     currentfolder.innerHTML = `Scanning: <code>${folderPath}</code>`;
     const files = await window.electron.readFolder(folderPath);
     filesAndFolders = files;
+    piedata = {};
     rendertree(filesAndFolders);
-    
+
     const totalItems = filesAndFolders.length;
     const chunkSize = 1500;
 
@@ -299,13 +411,14 @@ document.getElementById('select-file').addEventListener('click', async () => {
     }
     currentfolder.innerHTML = `Scanning: <code>'${filepath.path}'</code>`;
     filesAndFolders = filepath;
+    piedata = {};
     rendertree(filepath);
     filecount.innerHTML = 0;
     linecount.innerHTML = 0;
     wordcount.innerHTML = 0;
     charactercount.innerHTML = 0;
     await updatestats(true, filepath.path);
-    
+
 });
 
 document.getElementById('export-data').addEventListener('click', async () => {
@@ -319,58 +432,48 @@ document.getElementById('export-data').addEventListener('click', async () => {
     }
 });
 
-function generatePieChart(data) {
-    const ctx = document.createElement('canvas'); // Create a canvas element dynamically
-    document.getElementById('pie-chart').appendChild(ctx); // Append it to the pie-chart div
+document.getElementById('show-file-types').addEventListener('click', async () => {
+    if (lineorfile === 'lines') {
+        lineorfile = 'files';
+        document.getElementById('show-file-types').textContent = 'Show file types by lines';
+        displaylineorfile.innerHTML = 'Files Per File Extention:';
+    }
+    else {
+        lineorfile = 'lines';
+        document.getElementById('show-file-types').textContent = 'Show file types by files';
+        displaylineorfile.innerHTML = 'Lines Per File Extention:';
+    }
 
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: Object.keys(data), // File extensions
-            datasets: [{
-                data: Object.values(data), // File counts
-                backgroundColor: [
-                    '#007bff', '#ffc107', '#28a745', '#dc3545', '#17a2b8',
-                    '#6c757d', '#6610f2', '#fd7e14'
-                ], // Example colors
-                borderColor: '#1f1f1f',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: '#e0e0e0', // Legend text color
-                        font: { size: 14 }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        // Display percentage in the tooltip
-                        label: function(tooltipItem) {
-                            const total = tooltipItem.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((tooltipItem.raw / total) * 100).toFixed(2);
-                            return `${tooltipItem.label}: ${percentage}%`; // Show percentage in tooltip
-                        }
-                    }
-                }
+    piedata = {};
+
+    if (filesAndFolders.path) {
+        await updatestats(true, filesAndFolders.path);
+    }
+    else {
+        const totalItems = filesAndFolders.length;
+        const chunkSize = 1500;
+    
+        filecount.innerHTML = 0;
+        linecount.innerHTML = 0;
+        wordcount.innerHTML = 0;
+        charactercount.innerHTML = 0;
+    
+        if (totalItems > chunkSize) {
+            for (let i = 0; i < totalItems; i += chunkSize) {
+                const chunk = filesAndFolders.slice(i, i + chunkSize);
+                console.log("chunk", chunk);
+                await updatestats(true, chunk); // Update stats for the current chunk
             }
         }
-    });
-}
-
-// Example usage
-document.addEventListener('DOMContentLoaded', () => {
-    const exampleData = {
-        ".js": 30,
-        ".html": 20,
-        ".css": 15,
-        ".json": 10,
-        ".txt": 25
-    };
-
-    generatePieChart(exampleData); // Call function with example data
+        else {
+            await updatestats(true, filesAndFolders);
+        }
+    }
+    // pie data is now invalid and needs to be recalculated based on the new lineorfile value 
 });
+
+// change pie chart to show file per file extension to percentage of total lines per file extension
+// Average lines per file
+// Drag-and-drop file/folder support
+// Progress bar for large scans
+// open button to open file in default app

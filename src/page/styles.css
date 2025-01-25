@@ -256,7 +256,10 @@ main {
 
 #chart-container {
     padding: 20px;
+    width: 500px;
+    height: 490px;
     max-width: 500px;
+    max-height: 490px;
     background-color: #2a2a2a;
     border-radius: 10px;
     text-align: center;
@@ -271,7 +274,7 @@ main {
 }
 
 #pie-chart {
-    width: 100%;
+    width: 400px;
     height: 400px;
     display: flex;
     justify-content: center;

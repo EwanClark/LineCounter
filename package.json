@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "./src/app/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -11,9 +12,24 @@
   "type": "commonjs",
   "description": "",
   "devDependencies": {
-    "electron": "^34.0.1"
+    "electron": "^34.0.1",
+    "electron-builder": "^25.1.8"
   },
   "dependencies": {
     "readline": "^1.3.0"
+  },
+  "build": {
+    "appId": "com.example.linecounter",
+    "productName": "Line Counter",
+    "files": [
+      "./src/app/main.js",
+      "./src/app/preload.js",
+      "./src/page/index.html",
+      "./src/page/script.js",
+      "./src/page/styles.css"
+    ],
+    "directories": {
+      "output": "dist"
+    }
   }
 }

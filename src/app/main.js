@@ -21,6 +21,19 @@ app.on('ready', () => {
     mainWindow.loadFile('src/page/index.html');
 });
 
+function getFileExtension(file) {
+    const segments = file.split(path.sep); // Split path into segments by separator
+    const extname = path.extname(file).toLowerCase(); // Get file extension
+    
+    // Loop through the segments to find the first hidden directory (starting with a '.')
+    for (let segment of segments) {
+        if (segment.startsWith('.')) {
+            return segment; // Return the first hidden directory/file found
+        }
+    }
+    return extname || path.basename(file);
+}
+
 ipcMain.handle('selectFolder', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
         properties: ['openDirectory'],
@@ -69,13 +82,13 @@ ipcMain.handle('selectAndReadFile', async () => {
                 reject(error);
             });
         });
-
         return {
             path: filePath,
             type: 'file',
             lines: lineCount,
             words: wordCount,
             characters: characterCount,
+            fileExtension: getFileExtension(filePath),
         };
     } catch (error) {
         console.error('Error selecting file:', error);
@@ -112,6 +125,7 @@ ipcMain.handle('readFolder', async (_, folderPath) => {
                     lines: lineCount,
                     words: wordCount,
                     characters: characterCount,
+                    fileExtension: getFileExtension(filePath),
                 });
             });
 
