@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Counter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="modal" id="custom-alert">
+        <div class="modal-content">
+            <span class="modal-close" id="close-alert"></span>
+            <p id="alert-message">This is a custom alert!</p>
+            <button id="alert-ok">OK</button>
+        </div>
+    </div>
+    <div id="app">
+        <header>
+            <h1>Line Counter</h1>
+            <button id="select-file">Select File</button>
+            <button id="select-folder">Select Folder</button>
+            <button id="export-data">Export Data</button>
+        </header>
+        <main>
+            <aside id="folder-tree">
+                <h2>Files & Folders</h2>
+                <input type="text" id="search-bar" placeholder="Search files and folders...">
+                <ul id="tree-view">
+                </ul>
+            </aside>
+            <section id="content">
+                <div id="totals">
+                    <h2>Totals</h2>
+                    <p>Lines: <p id="linecount">0</p></p>
+                    <p>Words: <p id="wordcount">0</p></p>
+                    <p>Characters: <p id="charactercount">0</p></p>
+                </div>
+                <div id="pie-chart-container">
+                    <h2>Language Usage</h2>
+                    <canvas id="pie-chart"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

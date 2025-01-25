@@ -1,0 +1,290 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General Body Styles */
+body {
+    background-color: #121212; /* Dark background color */
+    color: #e0e0e0; /* Light text color for contrast */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Full-Width App */
+#app {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+/* Header */
+header {
+    display: flex;
+    padding: 10px 20px;
+    background-color: #1f1f1f;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+header h1 {
+    font-size: 1.8em;
+    color: #e0e0e0;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff; /* Blue button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#export-data {
+    margin-left: auto;
+}
+
+#select-file, #select-folder {
+    margin-left: 20px;
+}
+
+/* Main Content */
+main {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    margin-top: 20px;
+    height: calc(100% - 60px);
+    overflow: hidden;
+}
+
+/* File/Folder Tree */
+#folder-tree {
+    background-color: #1f1f1f;
+    padding: 20px;
+    width: 700px; /* Increased width for folder tree */
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+#folder-tree h2 {
+    color: #e0e0e0;
+    margin-bottom: 15px;
+}
+
+#search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #2c2c2c;
+    color: #e0e0e0;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+/* File/Folder List */
+#tree-view {
+    list-style: none;
+    padding-left: 10px;
+}
+
+#tree-view li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    color: #b0b0b0;
+}
+
+/* Checkbox Styles (Unchecked State) */
+#tree-view li input[type="checkbox"] {
+    background-color: #2c2c2c; /* Dark background when unchecked */
+    margin-right: 10px;
+    width: 18px; /* Standard checkbox size */
+    height: 18px;
+    border: 2px solid #444; /* Subtle border for contrast */
+    border-radius: 4px; /* Slightly rounded corners */
+    cursor: pointer;
+    appearance: none; /* Remove default browser styles */
+    display: inline-block;
+    vertical-align: middle; /* Aligns nicely with text */
+    position: relative;
+}
+
+/* Checkbox Hover Effect (Unchecked) */
+#tree-view li input[type="checkbox"]:hover {
+    background-color: #3a3a3a; /* Slightly lighter dark on hover */
+    border-color: #555; /* Lighter border when hovering */
+}
+
+/* Checkbox Checked State */
+#tree-view li input[type="checkbox"]:checked {
+    background-color: #007bff; /* Blue background when checked */
+    border-color: #0056b3; /* Darker blue border for contrast */
+    position: relative;
+}
+
+/* Checkbox Checkmark */
+#tree-view li input[type="checkbox"]:checked::after {
+    content: '✔'; /* Checkmark icon */
+    font-size: 14px;
+    color: #fff; /* White checkmark */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Tree Item Text Alignment */
+#tree-view li {
+    font-size: 1em;
+    color: #e0e0e0; /* Light text */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between checkbox and text */
+}
+
+/* Tree Item Hover Effect */
+#tree-view li:hover {
+    background-color: #1f1f1f; /* Slightly lighter background */
+    border-radius: 4px;
+}
+
+/* Content Area */
+#content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #1f1f1f;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    margin-left: 20px;
+}
+
+#totals {
+    margin-bottom: 30px;
+}
+
+#totals h2 {
+    color: #e0e0e0;
+}
+
+#totals p {
+    color: #b0b0b0;
+    font-size: 1.1em;
+}
+
+/* Pie Chart Container */
+#pie-chart-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#pie-chart-container h2 {
+    color: #e0e0e0;
+}
+
+/* Custom Scrollbar Styles */
+/* For Webkit browsers (Chrome, Safari) */
+#folder-tree::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+#folder-tree::-webkit-scrollbar-track {
+    background: #1e1e1e; /* Black background color for scrollbar track */
+    border-radius: 8px; /* Rounded corners of the scrollbar track */
+}
+
+#folder-tree::-webkit-scrollbar-thumb {
+    background: #007bff; /* Blue color for the scrollbar thumb */
+    border-radius: 8px; /* Rounded corners of the scrollbar thumb */
+    transition: background-color 0.3s ease; /* Smooth transition for color change */
+}
+
+#folder-tree::-webkit-scrollbar-thumb:hover {
+    background: #0056b3; /* Darker blue on hover */
+}
+
+/* For Firefox */
+#folder-tree {
+    scrollbar-width: thin; /* Thin scrollbar width */
+    scrollbar-color: #007bff #1e1e1e; /* Blue color for scrollbar thumb and black background for track */
+}
+
+/* For Edge and Internet Explorer */
+#folder-tree {
+    -ms-overflow-style: scrollbar; /* Ensure scrollbar is shown */
+}
+
+/* Modal Background */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-top: 0; /* From body */
+    box-sizing: border-box; /* From body */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #1e1e1e; /* Darker background */
+    color: white;
+    border-radius: 8px;
+    padding: 20px; /* Padding for content */
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+    max-width: 400px;
+    width: 100%;
+    font-family: 'Roboto', sans-serif; /* From body */
+}
+
+/* Close Button */
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: white;
+    margin-top: 0; /* From body */
+    padding: 0; /* From reset */
+}
+
+/* Alert OK Button */
+#alert-ok {
+    padding: 20px 40px; /* Consistent padding */
+    background-color: #0056b3; /* Dark blue background */
+    color: #fff; /* White text */
+    border: none; /* No border */
+    border-radius: 8px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s ease; /* Smooth color transition */
+    width: 240px; /* Consistent width */
+    margin-top: 15px; /* Vertical spacing */
+    margin-left: 0; /* Reset margin */
+    box-sizing: border-box; /* From reset */
+    font-family: 'Roboto', sans-serif; /* From body */
+}
