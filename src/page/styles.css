@@ -254,33 +254,6 @@ main {
     transition: 0.2s;
 }
 
-#chart-container {
-    padding: 20px;
-    width: 500px;
-    height: 490px;
-    max-width: 500px;
-    max-height: 490px;
-    background-color: #2a2a2a;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    margin-left: auto;
-}
-
-#chart-container h2 {
-    color: #ffffff;
-    font-size: 1.8em;
-    margin-bottom: 15px;
-}
-
-#pie-chart {
-    width: 400px;
-    height: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 /* Custom Scrollbar Styles */
 /* For Webkit browsers (Chrome, Safari) */
 #folder-tree::-webkit-scrollbar {
@@ -371,18 +344,56 @@ main {
     font-family: 'Roboto', sans-serif; /* From body */
 }
 
-#chartContainer {
+#chart-container-extension {
+    padding: 20px;
+    width: 500px;
+    height: 490px;
+    max-width: 500px;
+    max-height: 490px;
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-left: auto;
+}
+
+#chart-container-extension h2 {
+    color: #ffffff;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+#pie-chart-extension {
     width: 400px;
     height: 400px;
-    margin: 30px auto; /* Center the chart */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-#chartContainer h2 {
-    color: #e0e0e0;
+#chart-container-change {
+    padding: 20px;
+    width: 500px;
+    height: 490px;
+    max-width: 500px;
+    max-height: 490px;
+    background-color: #2a2a2a;
+    border-radius: 10px;
     text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-right: auto;
 }
 
-canvas {
-    width: 100%;
-    height: 100%;
+#chart-container-change h2 {
+    color: #ffffff;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+#pie-chart-change {
+    width: 400px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

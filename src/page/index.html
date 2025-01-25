@@ -29,7 +29,7 @@
         <main>
             <aside id="folder-tree">
                 <h2>Files & Folders</h2>
-                <input type="text" id="search-bar" placeholder="Search files and folders...">
+                <input type="text" id="search-bar" placeholder="Search files & folders...">
                 <ul id="tree-view">
                 </ul>
             </aside>
@@ -49,10 +49,14 @@
                         <span class="label">Characters:</span> <span class="value" id="charactercount">0</span>
                     </div>
                 </div>
-                <div id="chart-container">
-                    <button id="show-file-types">Show File Types</button>
-                    <h2 id="displaylineorfile">Lines Per File Extention:</h2>
-                    <canvas id="pie-chart"></canvas>
+                <div id="chart-container-extension">
+                    <button id="show-file-types">Show File Types By Files</button>
+                    <h2 id="displaylineorfile">Show Amount Of Files Per File Extension</h2>
+                    <canvas id="pie-chart-extension"></canvas>
+                </div>
+                <div id="chart-container-change">
+                    <h2>Change in Lines, Words & Characters</h2>
+                    <canvas id="pie-chart-change"></canvas>
                 </div>
             </section>
         </main>

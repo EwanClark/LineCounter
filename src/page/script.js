@@ -214,14 +214,14 @@ async function updatestats(a, f) {
                     if (lineorfile === 'lines') {
                         piedata[extension] += lines;
                     }
-                    else{
+                    else {
                         piedata[extension] += 1;
                     }
                 } else {
                     if (lineorfile === 'lines') {
                         piedata[extension] = lines;
                     }
-                    else{
+                    else {
                         piedata[extension] = 1;
                     }
                 }
@@ -234,7 +234,7 @@ async function updatestats(a, f) {
                 if (lineorfile === 'lines') {
                     piedata[extension] -= lines;
                 }
-                else{
+                else {
                     piedata[extension] -= 1;
                 }
                 updatepiechart(piedata);
@@ -298,7 +298,7 @@ async function arfile(itemPath, isChecked, itemType) {
 let pieChart; // Declare a variable to hold the chart instance
 
 function updatepiechart(data) {
-    const ctx = document.getElementById('pie-chart').getContext('2d');
+    const ctx = document.getElementById('pie-chart-extension').getContext('2d');
     if (pieChart) {
         pieChart.data.labels = Object.keys(data);
         pieChart.data.datasets[0].data = Object.values(data);
@@ -312,18 +312,18 @@ function updatepiechart(data) {
                     data: Object.values(data),
                     backgroundColor: [
                         '#007bff', '#ffc107', '#28a745', '#dc3545', '#17a2b8',
-                        '#6c757d', '#6610f2', '#fd7e14', '#ff6347', '#8a2be2', '#00bfff', 
+                        '#6c757d', '#6610f2', '#fd7e14', '#ff6347', '#8a2be2', '#00bfff',
                         '#ff1493', '#ff4500', '#f0e68c', '#32cd32', '#ff8c00', '#d2691e',
-                        '#2e8b57', '#d3d3d3', '#4b0082', '#ffff00', '#98fb98', '#ff00ff', 
-                        '#00ff00', '#ffd700', '#ff69b4', '#ff4500', '#8b0000', '#4682b4', 
-                        '#228b22', '#ff6347', '#adff2f', '#8b4513', '#4b0082', '#e9967a', 
+                        '#2e8b57', '#d3d3d3', '#4b0082', '#ffff00', '#98fb98', '#ff00ff',
+                        '#00ff00', '#ffd700', '#ff69b4', '#ff4500', '#8b0000', '#4682b4',
+                        '#228b22', '#ff6347', '#adff2f', '#8b4513', '#4b0082', '#e9967a',
                         '#b0c4de', '#ffb6c1', '#000080', '#ff0000', '#00ff7f', '#c71585',
                         '#dda0dd', '#e6e6fa', '#800080', '#ff6347', '#ff1493', '#7fff00',
                         '#f08080', '#f4a460', '#00008b', '#ff8c00', '#ff4500', '#d3d3d3',
-                        '#2e8b57', '#ff00ff', '#e9967a', '#483d8b', '#bdb76b', '#9acd32', 
+                        '#2e8b57', '#ff00ff', '#e9967a', '#483d8b', '#bdb76b', '#9acd32',
                         '#f0f8ff', '#6a5acd', '#ff1493', '#00ffff', '#c71585', '#f4a460',
                         '#20b2aa', '#98fb98', '#ff4500', '#9b30ff', '#ff6347', '#add8e6',
-                        '#f8f8ff', '#d2691e', '#32cd32', '#ff6347', '#ffb6c1', '#4682b4', 
+                        '#f8f8ff', '#d2691e', '#32cd32', '#ff6347', '#ffb6c1', '#4682b4',
                         '#228b22', '#ff0000', '#c71585', '#dda0dd', '#e6e6fa', '#800080',
                         '#ff00ff', '#ff6347', '#ff1493', '#7fff00', '#f08080', '#f4a460',
                         '#00008b', '#ff8c00', '#ff4500', '#d3d3d3', '#2e8b57', '#ff00ff'
@@ -352,7 +352,7 @@ function updatepiechart(data) {
                                     var percentage = ((tooltipItem.raw / linecount.innerHTML) * 100).toFixed(2);
                                     return `${label}: ${percentage}% (${tooltipItem.raw} lines)`;
                                 }
-                                else{
+                                else {
                                     var percentage = ((tooltipItem.raw / filecount.innerHTML) * 100).toFixed(2);
                                     return `${label}: ${percentage}% (${tooltipItem.raw} files)`;
                                 }
@@ -366,11 +366,20 @@ function updatepiechart(data) {
 }
 
 searchBar.addEventListener('input', () => {
-    const searchTerm = searchBar.value.toLowerCase();
-    const filteredItems = filesAndFolders.filter(item =>
-        item.path.toLowerCase().includes(searchTerm)
-    );
-    rendertree(filteredItems);
+    const listItems = treeView.getElementsByTagName('li');
+
+    searchBar.addEventListener('input', () => {
+        const searchText = searchBar.value.toLowerCase();
+
+        for (let item of listItems) {
+            const itemText = item.textContent.toLowerCase();
+            if (itemText.includes(searchText)) {
+                item.style.display = 'flex'; // Show the item if it matches
+            } else {
+                item.style.display = 'none'; // Hide the item if it doesn't match
+            }
+        }
+    });
 });
 
 document.getElementById('select-folder').addEventListener('click', async () => {
@@ -435,14 +444,26 @@ document.getElementById('export-data').addEventListener('click', async () => {
 document.getElementById('show-file-types').addEventListener('click', async () => {
     if (lineorfile === 'lines') {
         lineorfile = 'files';
-        document.getElementById('show-file-types').textContent = 'Show file types by lines';
-        displaylineorfile.innerHTML = 'Files Per File Extention:';
+        document.getElementById('show-file-types').textContent = 'Show Lines Per File Extension';
+        displaylineorfile.innerHTML = 'Showing Amount Of Files Per File Extension:';
     }
     else {
         lineorfile = 'lines';
-        document.getElementById('show-file-types').textContent = 'Show file types by files';
-        displaylineorfile.innerHTML = 'Lines Per File Extention:';
+        document.getElementById('show-file-types').textContent = 'Show files Per File Extension';
+        displaylineorfile.innerHTML = 'Showing Amount Of Lines Per File Extension:';
     }
+
+    // check all files and folders
+    if (!filesAndFolders.path) {
+        filesAndFolders.forEach(item => {
+            itemname = item.path;
+            document.getElementById(itemname).checked = true; 
+        });
+    }
+    else{
+        document.getElementById(filesAndFolders.path).checked = true;
+    }
+
 
     piedata = {};
 
@@ -452,12 +473,12 @@ document.getElementById('show-file-types').addEventListener('click', async () =>
     else {
         const totalItems = filesAndFolders.length;
         const chunkSize = 1500;
-    
+
         filecount.innerHTML = 0;
         linecount.innerHTML = 0;
         wordcount.innerHTML = 0;
         charactercount.innerHTML = 0;
-    
+
         if (totalItems > chunkSize) {
             for (let i = 0; i < totalItems; i += chunkSize) {
                 const chunk = filesAndFolders.slice(i, i + chunkSize);
@@ -469,7 +490,6 @@ document.getElementById('show-file-types').addEventListener('click', async () =>
             await updatestats(true, filesAndFolders);
         }
     }
-    // pie data is now invalid and needs to be recalculated based on the new lineorfile value 
 });
 
 // change pie chart to show file per file extension to percentage of total lines per file extension
@@ -477,3 +497,4 @@ document.getElementById('show-file-types').addEventListener('click', async () =>
 // Drag-and-drop file/folder support
 // Progress bar for large scans
 // open button to open file in default app
+// remeber default Pie chart showing lines per file extension or files per file extension
