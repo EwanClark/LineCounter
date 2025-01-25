@@ -36,18 +36,27 @@
             <section id="content">
                 <div id="totals">
                     <h2>Totals</h2>
-                    <p>Files: <p id="filecount">0</p></p>
-                    <p>Lines: <p id="linecount">0</p></p>
-                    <p>Words: <p id="wordcount">0</p></p>
-                    <p>Characters: <p id="charactercount">0</p></p>
+                    <div class="total-item">
+                        <span class="label">Files:</span> <span class="value" id="filecount">0</span>
+                    </div>
+                    <div class="total-item">
+                        <span class="label">Lines:</span> <span class="value" id="linecount">0</span>
+                    </div>
+                    <div class="total-item">
+                        <span class="label">Words:</span> <span class="value" id="wordcount">0</span>
+                    </div>
+                    <div class="total-item">
+                        <span class="label">Characters:</span> <span class="value" id="charactercount">0</span>
+                    </div>
                 </div>
-                <div id="pie-chart-container">
-                    <h2>Language Usage</h2>
-                    <canvas id="pie-chart"></canvas>
+                <div id="chart-container">
+                    <h2>File Types:</h2>
+                    <div id="pie-chart"></div>
                 </div>
             </section>
         </main>
     </div>
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

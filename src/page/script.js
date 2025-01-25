@@ -275,7 +275,7 @@ document.getElementById('select-folder').addEventListener('click', async () => {
     const totalItems = filesAndFolders.length;
     const chunkSize = 1500;
 
-    // filecount.innerHTML = totalItems;
+    filecount.innerHTML = 0;
     linecount.innerHTML = 0;
     wordcount.innerHTML = 0;
     charactercount.innerHTML = 0;
@@ -283,7 +283,7 @@ document.getElementById('select-folder').addEventListener('click', async () => {
     if (totalItems > chunkSize) {
         for (let i = 0; i < totalItems; i += chunkSize) {
             const chunk = filesAndFolders.slice(i, i + chunkSize);
-            console.log("chnk", chunk);
+            console.log("chunk", chunk);
             await updatestats(true, chunk); // Update stats for the current chunk
         }
     }
@@ -300,6 +300,7 @@ document.getElementById('select-file').addEventListener('click', async () => {
     currentfolder.innerHTML = `Scanning: <code>'${filepath.path}'</code>`;
     filesAndFolders = filepath;
     rendertree(filepath);
+    filecount.innerHTML = 0;
     linecount.innerHTML = 0;
     wordcount.innerHTML = 0;
     charactercount.innerHTML = 0;
@@ -316,4 +317,60 @@ document.getElementById('export-data').addEventListener('click', async () => {
         console.error('Error exporting data');
         sendalert('Error exporting data');
     }
+});
+
+function generatePieChart(data) {
+    const ctx = document.createElement('canvas'); // Create a canvas element dynamically
+    document.getElementById('pie-chart').appendChild(ctx); // Append it to the pie-chart div
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(data), // File extensions
+            datasets: [{
+                data: Object.values(data), // File counts
+                backgroundColor: [
+                    '#007bff', '#ffc107', '#28a745', '#dc3545', '#17a2b8',
+                    '#6c757d', '#6610f2', '#fd7e14'
+                ], // Example colors
+                borderColor: '#1f1f1f',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#e0e0e0', // Legend text color
+                        font: { size: 14 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        // Display percentage in the tooltip
+                        label: function(tooltipItem) {
+                            const total = tooltipItem.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((tooltipItem.raw / total) * 100).toFixed(2);
+                            return `${tooltipItem.label}: ${percentage}%`; // Show percentage in tooltip
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Example usage
+document.addEventListener('DOMContentLoaded', () => {
+    const exampleData = {
+        ".js": 30,
+        ".html": 20,
+        ".css": 15,
+        ".json": 10,
+        ".txt": 25
+    };
+
+    generatePieChart(exampleData); // Call function with example data
 });
