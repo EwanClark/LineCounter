@@ -105,6 +105,10 @@ button:focus {
     margin-left: 20px;
 }
 
+#reload {
+    margin-right: 10px;
+}
+
 /* Main Content */
 main {
     display: flex;

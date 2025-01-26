@@ -358,6 +358,45 @@ function updatepiechart(data) {
     }
 }
 
+async function init() {
+    document.querySelectorAll('input[name="option"]').forEach(button => {
+        button.disabled = true;
+    });
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.disabled = true;
+    });
+    currentfolder.innerHTML = `Scanning: <code>${folderPath}</code>`;
+    const files = await window.electron.readFolder(folderPath);
+    filesAndFolders = files;
+    rendertree(filesAndFolders);
+
+    const totalItems = filesAndFolders.length;
+    const chunkSize = 1500;
+
+    filecount.innerHTML = 0;
+    linecount.innerHTML = 0;
+    wordcount.innerHTML = 0;
+    charactercount.innerHTML = 0;
+
+    if (totalItems > chunkSize) {
+        for (let i = 0; i < totalItems; i += chunkSize) {
+            const chunk = filesAndFolders.slice(i, i + chunkSize);
+            console.log("chunk", chunk);
+            await updatestats(true, chunk); // Update stats for the current chunk
+        }
+    }
+    else {
+        await updatestats(true, filesAndFolders);
+    }
+    document.querySelectorAll('input[name="option"]').forEach(button => {
+        button.disabled = false;
+    });
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.disabled = false;
+    });
+}
+    
+
 searchBar.addEventListener('input', () => {
     const listItems = treeView.getElementsByTagName('li');
 
@@ -380,44 +419,7 @@ document.getElementById('select-folder').addEventListener('click', async () => {
     if (!folderPath) {
         return;
     }
-    currentfolder.innerHTML = `Scanning: <code>${folderPath}</code>`;
-    const files = await window.electron.readFolder(folderPath);
-    filesAndFolders = files;
-    piedata = {};
-    rendertree(filesAndFolders);
-
-    const totalItems = filesAndFolders.length;
-    const chunkSize = 1500;
-
-    filecount.innerHTML = 0;
-    linecount.innerHTML = 0;
-    wordcount.innerHTML = 0;
-    charactercount.innerHTML = 0;
-    
-    document.querySelectorAll('input[name="option"]').forEach(button => {
-        button.disabled = true;
-    });
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.disabled = true;
-    });
-
-    if (totalItems > chunkSize) {
-        for (let i = 0; i < totalItems; i += chunkSize) {
-            const chunk = filesAndFolders.slice(i, i + chunkSize);
-            console.log("chunk", chunk);
-            await updatestats(true, chunk); // Update stats for the current chunk
-        }
-    }
-    else {
-        await updatestats(true, filesAndFolders);
-    }
-    document.querySelectorAll('input[name="option"]').forEach(button => {
-        button.disabled = false;
-    });
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.disabled = false;
-    });
-
+    await init();
 });
 
 document.getElementById('select-file').addEventListener('click', async () => {
@@ -489,9 +491,6 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
         document.querySelectorAll('input[name="option"]').forEach(button => {
             button.disabled = true;
         });
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.disabled = true;
-        });
 
         if (filesAndFolders.path) {
             filecount.innerHTML = 0;
@@ -523,9 +522,6 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
             document.querySelectorAll('input[name="option"]').forEach(button => {
                 button.disabled = false;
             });
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.disabled = false;
-            });
         }
     });
 });
@@ -542,10 +538,72 @@ document.querySelectorAll('input[name="legend"]').forEach(button => {
     });
 });
 
+document.getElementById('reload').addEventListener('click', async () => {
+    if (filesAndFolders.path) {
+        localStorage.setItem('path', filesAndFolders.path);
+    } else {
+        localStorage.setItem('path', folderPath);
+    }
+    location.reload();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Prevent default drag-and-drop behaviors for the entire document
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+        document.addEventListener(event, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+
+
+    // Highlight page when dragging
+    ['dragenter', 'dragover'].forEach(event => {
+        document.addEventListener(event, () => {
+            document.body.style.border = '5px dashed #1e88e5'; // Highlight border
+        });
+    });
+
+    // Remove highlight when dragging out
+    ['dragleave', 'drop'].forEach(event => {
+        document.addEventListener(event, () => {
+            document.body.style.border = 'none';
+        });
+    });
+
+
+    // Handle dropped files/folders
+    document.addEventListener('drop', async e => {
+        e.stopPropagation();
+        e.preventDefault();
+        const droppedItems = e.dataTransfer.items;
+
+        // Check length of dropped items
+        if (droppedItems.length > 1) {
+            sendalert('Please drop only one file or folder at a time');
+            return;
+        }
+
+        if (droppedItems[0].webkitGetAsEntry().isDirectory) {
+            for (const file of droppedItems) {
+                console.log(file);
+            }
+        } else {
+            droppedItems[0].webkitGetAsEntry().file(file => {
+                console.log(file);
+            });
+        }
+    });
+});
+
+if (localStorage.getItem('path')) {
+    folderPath = localStorage.getItem('path');
+    localStorage.clear();
+    init();
+}
+
 // TODO:
-// Add a button to Re count!!
-// stop being able to press  radio buttons when its being updated
+// Drag-and-drop file/folder support --- TEST ON WINDOWS BECUASE NOT WORKING HERE
 // add more data analytics to the chart
-// Drag-and-drop file/folder support
 // Progress bar for large scans
 // open button to open file in default app

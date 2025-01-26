@@ -13,9 +13,8 @@ app.on('ready', () => {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             contextIsolation: true,
+            navigateOnDragDrop: true,
         },
-        frame: false,
-        titleBarStyle: 'hidden',
     });
 
     mainWindow.loadFile('src/page/index.html');
