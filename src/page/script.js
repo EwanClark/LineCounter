@@ -496,7 +496,7 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
 });
 
 document.querySelectorAll('input[name="legend"]').forEach(button => {
-    button.addEventListener('change', async (event) => {
+    button.addEventListener('change', async () => {
         if (legend) {
             legend = false;
         } else {
