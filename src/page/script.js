@@ -11,7 +11,8 @@ const displaylineorfile = document.getElementById('displaylineorfile');
 var folderPath;
 var filesAndFolders
 var piedata = {};
-var lineorfile = 'lines';
+var typeofchart = 'lines';
+var legend = false;
 
 // Function to show an alert
 function sendalert(message) {
@@ -211,18 +212,24 @@ async function updatestats(a, f) {
                 charactercount.innerHTML = currentcharactercount + characters;
                 filecount.innerHTML = currentfilecount + 1; // Increment file count
                 if (extension in piedata) {
-                    if (lineorfile === 'lines') {
+                    if (typeofchart === 'lines') {
                         piedata[extension] += lines;
-                    }
-                    else {
+                    } else if (typeofchart === 'files') {
                         piedata[extension] += 1;
+                    } else if (typeofchart === 'words') {
+                        piedata[extension] += words;
+                    } else if (typeofchart === 'characters') {
+                        piedata[extension] += characters;
                     }
                 } else {
-                    if (lineorfile === 'lines') {
+                    if (typeofchart === 'lines') {
                         piedata[extension] = lines;
-                    }
-                    else {
+                    } else if (typeofchart === 'files') {
                         piedata[extension] = 1;
+                    } else if (typeofchart === 'words') {
+                        piedata[extension] = words;
+                    } else if (typeofchart === 'characters') {
+                        piedata[extension] = characters;
                     }
                 }
                 updatepiechart(piedata);
@@ -231,7 +238,7 @@ async function updatestats(a, f) {
                 wordcount.innerHTML = currentwordcount - words;
                 charactercount.innerHTML = currentcharactercount - characters;
                 filecount.innerHTML = currentfilecount - 1; // Decrement file count
-                if (lineorfile === 'lines') {
+                if (typeofchart === 'lines') {
                     piedata[extension] -= lines;
                 }
                 else {
@@ -298,7 +305,7 @@ async function arfile(itemPath, isChecked, itemType) {
 let pieChart; // Declare a variable to hold the chart instance
 
 function updatepiechart(data) {
-    const ctx = document.getElementById('pie-chart-extension').getContext('2d');
+    const ctx = document.getElementById('pie-chart').getContext('2d');
     if (pieChart) {
         pieChart.data.labels = Object.keys(data);
         pieChart.data.datasets[0].data = Object.values(data);
@@ -311,22 +318,9 @@ function updatepiechart(data) {
                 datasets: [{
                     data: Object.values(data),
                     backgroundColor: [
-                        '#007bff', '#ffc107', '#28a745', '#dc3545', '#17a2b8',
-                        '#6c757d', '#6610f2', '#fd7e14', '#ff6347', '#8a2be2', '#00bfff',
-                        '#ff1493', '#ff4500', '#f0e68c', '#32cd32', '#ff8c00', '#d2691e',
-                        '#2e8b57', '#d3d3d3', '#4b0082', '#ffff00', '#98fb98', '#ff00ff',
-                        '#00ff00', '#ffd700', '#ff69b4', '#ff4500', '#8b0000', '#4682b4',
-                        '#228b22', '#ff6347', '#adff2f', '#8b4513', '#4b0082', '#e9967a',
-                        '#b0c4de', '#ffb6c1', '#000080', '#ff0000', '#00ff7f', '#c71585',
-                        '#dda0dd', '#e6e6fa', '#800080', '#ff6347', '#ff1493', '#7fff00',
-                        '#f08080', '#f4a460', '#00008b', '#ff8c00', '#ff4500', '#d3d3d3',
-                        '#2e8b57', '#ff00ff', '#e9967a', '#483d8b', '#bdb76b', '#9acd32',
-                        '#f0f8ff', '#6a5acd', '#ff1493', '#00ffff', '#c71585', '#f4a460',
-                        '#20b2aa', '#98fb98', '#ff4500', '#9b30ff', '#ff6347', '#add8e6',
-                        '#f8f8ff', '#d2691e', '#32cd32', '#ff6347', '#ffb6c1', '#4682b4',
-                        '#228b22', '#ff0000', '#c71585', '#dda0dd', '#e6e6fa', '#800080',
-                        '#ff00ff', '#ff6347', '#ff1493', '#7fff00', '#f08080', '#f4a460',
-                        '#00008b', '#ff8c00', '#ff4500', '#d3d3d3', '#2e8b57', '#ff00ff'
+                        '#1E88E5', '#FF5722', '#8BC34A', '#FFEB3B', '#9C27B0',
+                        '#3F51B5', '#FFC107', '#CDDC39', '#00BCD4', '#FF9800',
+                        '#009688', '#E91E63', '#4CAF50', '#FF4081', '#673AB7'
                     ],
                     borderColor: '#1f1f1f',
                     borderWidth: 1
@@ -336,25 +330,24 @@ function updatepiechart(data) {
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'left',
-                        labels: {
-                            color: '#e0e0e0',
-                            font: { size: 14 },
-                            padding: 20,
-                            boxWidth: 20, // Adjusts the size of the legend item
-                        }
+                        display: legend,
                     },
                     tooltip: {
                         callbacks: {
                             label: function (tooltipItem) {
                                 const label = tooltipItem.label;
-                                if (lineorfile === 'lines') {
+                                if (typeofchart === 'lines') {
                                     var percentage = ((tooltipItem.raw / linecount.innerHTML) * 100).toFixed(2);
                                     return `${label}: ${percentage}% (${tooltipItem.raw} lines)`;
-                                }
-                                else {
+                                } else if (typeofchart === 'files') {
                                     var percentage = ((tooltipItem.raw / filecount.innerHTML) * 100).toFixed(2);
                                     return `${label}: ${percentage}% (${tooltipItem.raw} files)`;
+                                } else if (typeofchart === 'words') {
+                                    var percentage = ((tooltipItem.raw / wordcount.innerHTML) * 100).toFixed(2);
+                                    return `${label}: ${percentage}% (${tooltipItem.raw} words)`;
+                                } else if (typeofchart === 'characters') {
+                                    var percentage = ((tooltipItem.raw / charactercount.innerHTML) * 100).toFixed(2);
+                                    return `${label}: ${percentage}% (${tooltipItem.raw} characters)`;
                                 }
                             }
                         }
@@ -441,60 +434,80 @@ document.getElementById('export-data').addEventListener('click', async () => {
     }
 });
 
-document.getElementById('show-file-types').addEventListener('click', async () => {
-    if (lineorfile === 'lines') {
-        lineorfile = 'files';
-        document.getElementById('show-file-types').textContent = 'Show Lines Per File Extension';
-        displaylineorfile.innerHTML = 'Showing Amount Of Files Per File Extension:';
-    }
-    else {
-        lineorfile = 'lines';
-        document.getElementById('show-file-types').textContent = 'Show files Per File Extension';
-        displaylineorfile.innerHTML = 'Showing Amount Of Lines Per File Extension:';
-    }
+document.querySelectorAll('input[name="option"]').forEach(button => {
+    button.addEventListener('change', async (event) => {
+        option = event.target.value;
+        if (option === 'lines') {
+            typeofchart = 'lines';
+            displaylineorfile.innerHTML = 'Showing Lines Per File Extension:';
+        } else if (option === 'files') {
+            typeofchart = 'files';
+            displaylineorfile.innerHTML = 'Showing Files Per File Extension:';
+        } else if (option === 'words') {
+            typeofchart = 'words';
+            displaylineorfile.innerHTML = 'Showing Words Per File Extension:';
+        } else if (option === 'characters') {
+            typeofchart = 'characters';
+            displaylineorfile.innerHTML = 'Showing Characters Per File Extension:';
+        }
 
-    // check all files and folders
-    if (!filesAndFolders.path) {
-        filesAndFolders.forEach(item => {
-            itemname = item.path;
-            document.getElementById(itemname).checked = true; 
-        });
-    }
-    else{
-        document.getElementById(filesAndFolders.path).checked = true;
-    }
-
-
-    piedata = {};
-
-    if (filesAndFolders.path) {
-        await updatestats(true, filesAndFolders.path);
-    }
-    else {
-        const totalItems = filesAndFolders.length;
-        const chunkSize = 1500;
-
-        filecount.innerHTML = 0;
-        linecount.innerHTML = 0;
-        wordcount.innerHTML = 0;
-        charactercount.innerHTML = 0;
-
-        if (totalItems > chunkSize) {
-            for (let i = 0; i < totalItems; i += chunkSize) {
-                const chunk = filesAndFolders.slice(i, i + chunkSize);
-                console.log("chunk", chunk);
-                await updatestats(true, chunk); // Update stats for the current chunk
-            }
+        // check all files and folders
+        if (!filesAndFolders.path) {
+            filesAndFolders.forEach(item => {
+                itemname = item.path;
+                document.getElementById(itemname).checked = true;
+            });
         }
         else {
-            await updatestats(true, filesAndFolders);
+            document.getElementById(filesAndFolders.path).checked = true;
         }
-    }
+
+
+        piedata = {};
+
+        if (filesAndFolders.path) {
+            filecount.innerHTML = 0;
+            linecount.innerHTML = 0;
+            wordcount.innerHTML = 0;
+            charactercount.innerHTML = 0;
+            await updatestats(true, filesAndFolders.path);
+        }
+        else {
+            const totalItems = filesAndFolders.length;
+            const chunkSize = 1500;
+
+            filecount.innerHTML = 0;
+            linecount.innerHTML = 0;
+            wordcount.innerHTML = 0;
+            charactercount.innerHTML = 0;
+
+            if (totalItems > chunkSize) {
+                for (let i = 0; i < totalItems; i += chunkSize) {
+                    const chunk = filesAndFolders.slice(i, i + chunkSize);
+                    console.log("chunk", chunk);
+                    await updatestats(true, chunk); // Update stats for the current chunk
+                }
+            }
+            else {
+                await updatestats(true, filesAndFolders);
+            }
+        }
+    });
 });
 
-// change pie chart to show file per file extension to percentage of total lines per file extension
-// Average lines per file
+document.querySelectorAll('input[name="legend"]').forEach(button => {
+    button.addEventListener('change', async (event) => {
+        if (legend) {
+            legend = false;
+        } else {
+            legend = true;
+        }
+        pieChart.options.plugins.legend.display = legend;
+        pieChart.update();
+    });
+});
+
+// add more data analytics to the chart
 // Drag-and-drop file/folder support
 // Progress bar for large scans
 // open button to open file in default app
-// remeber default Pie chart showing lines per file extension or files per file extension

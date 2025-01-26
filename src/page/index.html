@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Line Counter</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="modal" id="custom-alert">
         <div class="modal-content">
@@ -49,14 +51,35 @@
                         <span class="label">Characters:</span> <span class="value" id="charactercount">0</span>
                     </div>
                 </div>
-                <div id="chart-container-extension">
-                    <button id="show-file-types">Show File Types By Files</button>
-                    <h2 id="displaylineorfile">Show Amount Of Files Per File Extension</h2>
-                    <canvas id="pie-chart-extension"></canvas>
-                </div>
-                <div id="chart-container-change">
-                    <h2>Change in Lines, Words & Characters</h2>
-                    <canvas id="pie-chart-change"></canvas>
+                <div id="chart-container-wrapper">
+                    <div id="chart-container-choice">
+                        <h2 id="displaylineorfile">Show Files Per File Extension:</h2>
+                        <div id="input-options">
+                            <label>
+                                <input type="radio" name="option" value="files"> Show Files Per File Extension
+                            </label>
+                            <label>
+                                <input type="radio" name="option" value="lines" checked> Show Lines Per File Extension
+                            </label>
+                            <label>
+                                <input type="radio" name="option" value="words"> Show Words Per File Extension
+                            </label>
+                            <label>
+                                <input type="radio" name="option" value="characters"> Show Characters Per File Extension
+                            </label>
+                        </div>
+                        <div id="legend">
+                            <label>
+                                <input type="radio" name="legend" value="on"> Show Colour Code
+                            </label>
+                            <label>
+                                <input type="radio" name="legend" value="off" checked> Hide Color Code
+                            </label>
+                        </div>
+                    </div>
+                    <div id="chart-container">
+                        <canvas id="pie-chart"></canvas>
+                    </div>
                 </div>
             </section>
         </main>
@@ -64,4 +87,5 @@
     <script src="script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
+
 </html>

@@ -344,56 +344,105 @@ main {
     font-family: 'Roboto', sans-serif; /* From body */
 }
 
-#chart-container-extension {
-    padding: 20px;
-    width: 500px;
+#chart-container-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+#chart-container-choice, #chart-container {
+    width: 600px;
     height: 490px;
-    max-width: 500px;
-    max-height: 490px;
     background-color: #2a2a2a;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    margin-left: auto;
+    padding: 20px;
+    box-sizing: border-box;  /* Ensure padding does not overflow the container */
 }
 
-#chart-container-extension h2 {
+#chart-container-choice h2 {
     color: #ffffff;
     font-size: 1.8em;
     margin-bottom: 15px;
 }
 
-#pie-chart-extension {
-    width: 400px;
-    height: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#chart-container-change {
-    padding: 20px;
+#pie-chart {
     width: 500px;
-    height: 490px;
-    max-width: 500px;
-    max-height: 490px;
-    background-color: #2a2a2a;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    margin-right: auto;
-}
-
-#chart-container-change h2 {
-    color: #ffffff;
-    font-size: 1.8em;
-    margin-bottom: 15px;
-}
-
-#pie-chart-change {
-    width: 400px;
-    height: 400px;
+    height: 500px;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0 auto; /* Center the chart horizontally */
+}
+
+/* Container for radio buttons */
+#input-options, #legend {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping to new line */
+    gap: 20px; /* space between the buttons */
+    font-size: 1.2em;
+    color: #ffffff;
+    padding: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    justify-content: center; /* center the radio buttons horizontally */
+    height: auto; /* Allow height to adjust based on content */
+}
+
+#legend {
+    margin-top: 20px;
+}
+
+/* Style for each label */
+#input-options label, #legend label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1 1 calc(50% - 20px); /* Take up half the container width minus the gap */
+}
+
+/* Style for the radio button */
+#input-options input[type="radio"], #legend input[type="radio"] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    accent-color: #1e88e5; /* Custom color for radio button */
+    transition: transform 0.2s ease;
+}
+
+/* Hover effect for label */
+#input-options label:hover, #legend label:hover {
+    color: #1e88e5;
+}
+
+/* Focused radio button effect */
+#input-options input[type="radio"]:focus, #legend input[type="radio"]:focus {
+    box-shadow: 0 0 5px rgba(30, 136, 229, 0.6);
+    transform: scale(1.2);
+}
+
+/* Checked radio button effect */
+#input-options input[type="radio"]:checked, #legend input[type="radio"]:checked {
+    background-color: #1e88e5;
+    border-color: #1e88e5;
+}
+
+/* Hover effect on radio button inside label */
+#input-options label:hover input[type="radio"], #legend label:hover input[type="radio"] {
+    transform: scale(1.2);
+}
+
+/* Optional: For mobile responsiveness */
+@media (max-width: 600px) {
+    #input-options, #legend {
+        padding: 15px;
+        font-size: 1em;
+    }
+
+    #input-options label, #legend label {
+        font-size: 1.1em;
+    }
 }
