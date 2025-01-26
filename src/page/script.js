@@ -393,6 +393,13 @@ document.getElementById('select-folder').addEventListener('click', async () => {
     linecount.innerHTML = 0;
     wordcount.innerHTML = 0;
     charactercount.innerHTML = 0;
+    
+    document.querySelectorAll('input[name="option"]').forEach(button => {
+        button.disabled = true;
+    });
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.disabled = true;
+    });
 
     if (totalItems > chunkSize) {
         for (let i = 0; i < totalItems; i += chunkSize) {
@@ -404,6 +411,13 @@ document.getElementById('select-folder').addEventListener('click', async () => {
     else {
         await updatestats(true, filesAndFolders);
     }
+    document.querySelectorAll('input[name="option"]').forEach(button => {
+        button.disabled = false;
+    });
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.disabled = false;
+    });
+
 });
 
 document.getElementById('select-file').addEventListener('click', async () => {
@@ -419,7 +433,13 @@ document.getElementById('select-file').addEventListener('click', async () => {
     linecount.innerHTML = 0;
     wordcount.innerHTML = 0;
     charactercount.innerHTML = 0;
+    document.querySelectorAll('input[name="option"]').forEach(button => {
+        button.disabled = true;
+    });
     await updatestats(true, filepath.path);
+    document.querySelectorAll('input[name="option"]').forEach(button => {
+        button.disabled = false;
+    });
 
 });
 
@@ -465,6 +485,14 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
 
         piedata = {};
 
+        // stop radio buttons from being pressed when updating
+        document.querySelectorAll('input[name="option"]').forEach(button => {
+            button.disabled = true;
+        });
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.disabled = true;
+        });
+
         if (filesAndFolders.path) {
             filecount.innerHTML = 0;
             linecount.innerHTML = 0;
@@ -491,6 +519,13 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
             else {
                 await updatestats(true, filesAndFolders);
             }
+            // re-enable radio buttons
+            document.querySelectorAll('input[name="option"]').forEach(button => {
+                button.disabled = false;
+            });
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.disabled = false;
+            });
         }
     });
 });
@@ -507,6 +542,9 @@ document.querySelectorAll('input[name="legend"]').forEach(button => {
     });
 });
 
+// TODO:
+// Add a button to Re count!!
+// stop being able to press  radio buttons when its being updated
 // add more data analytics to the chart
 // Drag-and-drop file/folder support
 // Progress bar for large scans

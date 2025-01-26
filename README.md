@@ -23,8 +23,10 @@ Line Counter is an Electron-based application that allows users to select files 
     npm install
     ```
 
-
 3. Start the application:
     ```sh
     npm start
     ```
+
+## Known Bugs
+- After the initial launch on large folders, if a checkbox is unticked and the pie chart type is changed while the application is still updating, the counters may display incorrect values. To resolve this, press the "Reload" button at the top to reset and recount from zero.
