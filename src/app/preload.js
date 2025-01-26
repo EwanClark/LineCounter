@@ -1,5 +1,5 @@
 // src/app/preload.js
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, webUtils} = require('electron');
 
 // Expose the methods to the renderer process
 contextBridge.exposeInMainWorld('electron', {
@@ -11,4 +11,8 @@ contextBridge.exposeInMainWorld('electron', {
     countCharacters: (filePath) => ipcRenderer.invoke('countCharacters', filePath), // Count characters in a file
     isFile: (filePath, folderPath) => ipcRenderer.invoke('isFile', filePath, folderPath), // Check if a path is a file
     exportData: (data) => ipcRenderer.invoke('exportData', data), // Export data to a file
+    showFilePath: (file) => {
+        const path = webUtils.getPathForFile(file);
+        return path;
+    }
 });

@@ -192,3 +192,35 @@ ipcMain.handle('exportData', async (_, data) => {
         throw error;
     }
 });
+
+ipcMain.handle('folderPath', async (_, folderName) => {
+    try {
+        const appDir = app.getPath('home'); // Default to the user's home directory
+        const folderPath = path.join(appDir, folderName);
+
+        if (fs.existsSync(folderPath)) {
+            return folderPath; // Return the resolved path
+        } else {
+            throw new Error(`Folder "${folderName}" does not exist`);
+        }
+    } catch (err) {
+        console.error('Error resolving folder path:', err);
+        throw err;
+    }
+});
+
+ipcMain.handle('filePath', async (_, fileName) => {
+    try {
+        const appDir = app.getPath('downloads'); // Default to the Downloads directory
+        const filePath = path.join(appDir, fileName);
+
+        if (fs.existsSync(filePath)) {
+            return filePath; // Return the resolved path
+        } else {
+            throw new Error(`File "${fileName}" does not exist`);
+        }
+    } catch (err) {
+        console.error('Error resolving file path:', err);
+        throw err;
+    }
+});

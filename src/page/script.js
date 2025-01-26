@@ -395,7 +395,7 @@ async function init() {
         checkbox.disabled = false;
     });
 }
-    
+
 
 searchBar.addEventListener('input', () => {
     const listItems = treeView.getElementsByTagName('li');
@@ -556,7 +556,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-
     // Highlight page when dragging
     ['dragenter', 'dragover'].forEach(event => {
         document.addEventListener(event, () => {
@@ -571,27 +570,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-
     // Handle dropped files/folders
-    document.addEventListener('drop', async e => {
+    document.addEventListener('drop', async (e) => {
         e.stopPropagation();
         e.preventDefault();
+
         const droppedItems = e.dataTransfer.items;
 
-        // Check length of dropped items
+        // Ensure a single item is dropped
         if (droppedItems.length > 1) {
-            sendalert('Please drop only one file or folder at a time');
+            alert('Please drop only one file or folder at a time');
             return;
         }
 
-        if (droppedItems[0].webkitGetAsEntry().isDirectory) {
-            for (const file of droppedItems) {
-                console.log(file);
-            }
+        const item = droppedItems[0];
+
+        // Check if the dropped item is a file or a directory
+        if (item.kind === 'file') {
+            // Handle file drop
+            const file = item.getAsFile();
+            const filePath = await window.electron.showFilePath(file);
+            console.log(filePath);
+        } else if (item.kind === 'directory') {
+            // Handle folder drop
+            const directoryEntry = item.getAsEntry();
+            folderPath = await window.electron.showFilePath(directoryEntry);
+            init();
         } else {
-            droppedItems[0].webkitGetAsEntry().file(file => {
-                console.log(file);
-            });
+            console.error("Unsupported item type:", item.kind);
         }
     });
 });
