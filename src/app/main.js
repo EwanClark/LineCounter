@@ -11,14 +11,26 @@ app.on('ready', () => {
         height: 800,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            nodeIntegration: false,
             contextIsolation: true,
-            navigateOnDragDrop: true,
         },
+        frame: false,
     });
 
     mainWindow.loadFile('src/page/index.html');
 });
+
+// const menu = new Menu();
+
+// menu.append(new MenuItem({
+//   label: 'Electron',
+//   submenu: [{
+//     role: 'help',
+//     accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Alt+Shift+I',
+//     click: () => { console.log('Electron rocks!') }
+//   }]
+// }))
+
+// Menu.setApplicationMenu(menu);
 
 function getFileExtension(file) {
     const segments = file.split(path.sep); // Split path into segments by separator
@@ -43,22 +55,23 @@ ipcMain.handle('selectFolder', async () => {
     return result.filePaths[0];
 });
 
-ipcMain.handle('selectAndReadFile', async () => {
+ipcMain.handle('selectFile', async () => {
+    const result = await dialog.showOpenDialog({
+        properties: ['openFile'],
+    });
+
+    if (result.canceled || result.filePaths.length === 0) {
+        return null; // Return null if no file is selected
+    }
+    return result.filePaths[0];
+});
+
+ipcMain.handle('readFile', async (_, filePath) => {
     let lineCount = 0;
     let wordCount = 0;
     let characterCount = 0;
 
     try {
-        const result = await dialog.showOpenDialog({
-            properties: ['openFile'],
-        });
-
-        if (result.canceled || result.filePaths.length === 0) {
-            return null; // Return null if no file is selected
-        }
-
-        const filePath = result.filePaths[0];
-
         await new Promise((resolve, reject) => {
             const fileStream = fs.createReadStream(filePath);
             const rl = readline.createInterface({
@@ -94,16 +107,17 @@ ipcMain.handle('selectAndReadFile', async () => {
         throw error; // Rethrow the error to handle it in the renderer process
     }
 });
+
 ipcMain.handle('readFolder', async (_, folderPath) => {
     const files = [];
 
-    const readFileStats = async (filePath, baseDir) => {
+    const readFileStats = async (folderPath, baseDir) => {
         return new Promise((resolve, reject) => {
             let lineCount = 0;
             let wordCount = 0;
             let characterCount = 0;
 
-            const fileStream = fs.createReadStream(filePath);
+            const fileStream = fs.createReadStream(folderPath);
             const rl = readline.createInterface({
                 input: fileStream,
                 crlfDelay: Infinity, // Handle different types of line breaks
@@ -117,14 +131,14 @@ ipcMain.handle('readFolder', async (_, folderPath) => {
             });
 
             rl.on('close', () => {
-                const relativePath = path.relative(baseDir, filePath);
+                const relativePath = path.relative(baseDir, folderPath);
                 resolve({
                     path: relativePath,
                     type: 'file',
                     lines: lineCount,
                     words: wordCount,
                     characters: characterCount,
-                    fileExtension: getFileExtension(filePath),
+                    fileExtension: getFileExtension(folderPath),
                 });
             });
 

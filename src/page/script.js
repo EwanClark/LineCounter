@@ -9,7 +9,7 @@ const currentfolder = document.getElementById('currentfolder');
 const displaylineorfile = document.getElementById('displaylineorfile');
 
 var folderPath;
-var filesAndFolders
+var filesAndFolders;
 var piedata = {};
 var typeofchart = 'lines';
 var legend = false;
@@ -145,7 +145,6 @@ async function updatestats(a, f) {
             }
         }
     } else {
-
         // check if it is a single file or a folder scanning
 
         // Check if the path is a file
@@ -168,8 +167,6 @@ async function updatestats(a, f) {
             const children = getchildren(fullfilepath);
             await updatestats(a, children);
         } else {
-
-
             // If it's a file, count lines, words, and characters
             if (filesAndFolders.path) {
                 var fileData = filesAndFolders;
@@ -336,18 +333,31 @@ function updatepiechart(data) {
                         callbacks: {
                             label: function (tooltipItem) {
                                 const label = tooltipItem.label;
-                                if (typeofchart === 'lines') {
-                                    var percentage = ((tooltipItem.raw / linecount.innerHTML) * 100).toFixed(2);
-                                    return `${label}: ${percentage}% (${tooltipItem.raw} lines)`;
-                                } else if (typeofchart === 'files') {
-                                    var percentage = ((tooltipItem.raw / filecount.innerHTML) * 100).toFixed(2);
-                                    return `${label}: ${percentage}% (${tooltipItem.raw} files)`;
-                                } else if (typeofchart === 'words') {
-                                    var percentage = ((tooltipItem.raw / wordcount.innerHTML) * 100).toFixed(2);
-                                    return `${label}: ${percentage}% (${tooltipItem.raw} words)`;
-                                } else if (typeofchart === 'characters') {
-                                    var percentage = ((tooltipItem.raw / charactercount.innerHTML) * 100).toFixed(2);
-                                    return `${label}: ${percentage}% (${tooltipItem.raw} characters)`;
+                                if (!filesAndFolders.path) {
+                                    if (typeofchart === 'lines') {
+                                        var percentage = ((tooltipItem.raw / linecount.innerHTML) * 100).toFixed(2);
+                                        return `${label}: ${percentage}% (${tooltipItem.raw} lines)`;
+                                    } else if (typeofchart === 'files') {
+                                        var percentage = ((tooltipItem.raw / filecount.innerHTML) * 100).toFixed(2);
+                                        return `${label}: ${percentage}% (${tooltipItem.raw} files)`;
+                                    } else if (typeofchart === 'words') {
+                                        var percentage = ((tooltipItem.raw / wordcount.innerHTML) * 100).toFixed(2);
+                                        return `${label}: ${percentage}% (${tooltipItem.raw} words)`;
+                                    } else if (typeofchart === 'characters') {
+                                        var percentage = ((tooltipItem.raw / charactercount.innerHTML) * 100).toFixed(2);
+                                        return `${label}: ${percentage}% (${tooltipItem.raw} characters)`;
+                                    }
+                                }
+                                else {
+                                    if (typeofchart === 'lines') {
+                                        return `${label}: 100% (${tooltipItem.raw} lines)`;
+                                    } else if (typeofchart === 'files') {
+                                        return `${label}: 100% (${tooltipItem.raw} files)`;
+                                    } else if (typeofchart === 'words') {
+                                        return `${label}: 100% (${tooltipItem.raw} words)`;
+                                    } else if (typeofchart === 'characters') {
+                                        return `${label}: 100% (${tooltipItem.raw} characters)`;
+                                    }
                                 }
                             }
                         }
@@ -358,36 +368,61 @@ function updatepiechart(data) {
     }
 }
 
-async function init() {
+async function init(f) {
     document.querySelectorAll('input[name="option"]').forEach(button => {
         button.disabled = true;
     });
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         checkbox.disabled = true;
     });
-    currentfolder.innerHTML = `Scanning: <code>${folderPath}</code>`;
-    const files = await window.electron.readFolder(folderPath);
-    filesAndFolders = files;
-    rendertree(filesAndFolders);
+    
+    
+    if (f) {
+        document.getElementById('export-data').disabled = false;
+        filecount.innerHTML = 0;
+        linecount.innerHTML = 0;
+        wordcount.innerHTML = 0;
+        charactercount.innerHTML = 0;
+        piedata = {};
+        
+        const file = await window.electron.readFile(f);
+        
+        currentfolder.innerHTML = `Scanning: <code>'${file.path}'</code>`;
+        filesAndFolders = file;
+        rendertree(file);
+        await updatestats(true, file);
+    } else if (folderPath) {
+        document.getElementById('export-data').disabled = false;
+        filecount.innerHTML = 0;
+        linecount.innerHTML = 0;
+        wordcount.innerHTML = 0;
+        charactercount.innerHTML = 0;
+        piedata = {};
 
-    const totalItems = filesAndFolders.length;
-    const chunkSize = 1500;
+        currentfolder.innerHTML = `Scanning: <code>${folderPath}</code>`;
+        const files = await window.electron.readFolder(folderPath);
+        filesAndFolders = files;
+        rendertree(filesAndFolders);
 
-    filecount.innerHTML = 0;
-    linecount.innerHTML = 0;
-    wordcount.innerHTML = 0;
-    charactercount.innerHTML = 0;
+        const totalItems = filesAndFolders.length;
+        const chunkSize = 1500;
 
-    if (totalItems > chunkSize) {
-        for (let i = 0; i < totalItems; i += chunkSize) {
-            const chunk = filesAndFolders.slice(i, i + chunkSize);
-            console.log("chunk", chunk);
-            await updatestats(true, chunk); // Update stats for the current chunk
+
+        if (totalItems > chunkSize) {
+            for (let i = 0; i < totalItems; i += chunkSize) {
+                const chunk = filesAndFolders.slice(i, i + chunkSize);
+                console.log("chunk", chunk);
+                await updatestats(true, chunk); // Update stats for the current chunk
+            }
         }
+        else {
+            await updatestats(true, filesAndFolders);
+        }
+    } else {
+        sendalert('Error selecting file/folder');
+        console.error('Error selecting file/folder');
     }
-    else {
-        await updatestats(true, filesAndFolders);
-    }
+
     document.querySelectorAll('input[name="option"]').forEach(button => {
         button.disabled = false;
     });
@@ -423,36 +458,24 @@ document.getElementById('select-folder').addEventListener('click', async () => {
 });
 
 document.getElementById('select-file').addEventListener('click', async () => {
-    const filepath = await window.electron.selectAndReadFile();
+    const filepath = await window.electron.selectFile();
     if (!filepath) {
         return;
     }
-    currentfolder.innerHTML = `Scanning: <code>'${filepath.path}'</code>`;
-    filesAndFolders = filepath;
-    piedata = {};
-    rendertree(filepath);
-    filecount.innerHTML = 0;
-    linecount.innerHTML = 0;
-    wordcount.innerHTML = 0;
-    charactercount.innerHTML = 0;
-    document.querySelectorAll('input[name="option"]').forEach(button => {
-        button.disabled = true;
-    });
-    await updatestats(true, filepath.path);
-    document.querySelectorAll('input[name="option"]').forEach(button => {
-        button.disabled = false;
-    });
-
+    await init(filepath);
 });
 
 document.getElementById('export-data').addEventListener('click', async () => {
+    if (!filesAndFolders) {
+        sendalert('No data to export');
+        console.error('No data to export');
+    }
     const result = await window.electron.exportData(filesAndFolders);
     if (result) {
         datafile = result;
         sendalert(`Data exported successfully to ${datafile}`);
     } else {
-        console.error('Error exporting data');
-        sendalert('Error exporting data');
+        console.log('Probably closed window to export data or error exporting data');
     }
 });
 
@@ -484,7 +507,6 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
             document.getElementById(filesAndFolders.path).checked = true;
         }
 
-
         piedata = {};
 
         // stop radio buttons from being pressed when updating
@@ -497,7 +519,7 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
             linecount.innerHTML = 0;
             wordcount.innerHTML = 0;
             charactercount.innerHTML = 0;
-            await updatestats(true, filesAndFolders.path);
+            await updatestats(true, filesAndFolders);
         }
         else {
             const totalItems = filesAndFolders.length;
@@ -516,13 +538,13 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
                 }
             }
             else {
-                await updatestats(true, filesAndFolders);
+                updatestats(true, filesAndFolders);
             }
             // re-enable radio buttons
-            document.querySelectorAll('input[name="option"]').forEach(button => {
-                button.disabled = false;
-            });
         }
+        document.querySelectorAll('input[name="option"]').forEach(button => {
+            button.disabled = false;
+        });
     });
 });
 
@@ -539,10 +561,13 @@ document.querySelectorAll('input[name="legend"]').forEach(button => {
 });
 
 document.getElementById('reload').addEventListener('click', async () => {
-    if (filesAndFolders.path) {
-        localStorage.setItem('path', filesAndFolders.path);
-    } else {
-        localStorage.setItem('path', folderPath);
+    if (filesAndFolders) {
+        if (filesAndFolders.path) {
+            localStorage.setItem('path', filesAndFolders.path);
+        }
+        else {
+            localStorage.setItem('path', folderPath);
+        }
     }
     location.reload();
 });
@@ -577,39 +602,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const droppedItems = e.dataTransfer.items;
 
-        // Ensure a single item is dropped
-        if (droppedItems.length > 1) {
-            alert('Please drop only one file or folder at a time');
-            return;
-        }
-
         const item = droppedItems[0];
 
-        // Check if the dropped item is a file or a directory
-        if (item.kind === 'file') {
-            // Handle file drop
+        if (item.kind == ! 'file' && item.kind !== 'directory') {
+            sendalert('Please drop a file or folder');
+            return;
+        }
+        else if (droppedItems.length > 1) {
+            sendalert('Please drop only one file or folder');
+            return;
+        }
+        else {
             const file = item.getAsFile();
             const filePath = await window.electron.showFilePath(file);
-            console.log(filePath);
-        } else if (item.kind === 'directory') {
-            // Handle folder drop
-            const directoryEntry = item.getAsEntry();
-            folderPath = await window.electron.showFilePath(directoryEntry);
-            init();
-        } else {
-            console.error("Unsupported item type:", item.kind);
+            const isFile = await window.electron.isFile(filePath, '');
+
+            if (isFile) {
+                await init(filePath);
+            } else {
+                folderPath = filePath;
+                await init();
+
+            }
         }
     });
 });
 
+document.addEventListener('keydown', async (event) => {
+    if (event.key === 'Escape') {
+        closeModal();
+    } else if (event.ctrlKey && event.key === 'k') {
+        folderPath = await window.electron.selectFolder();
+        if (!folderPath) {
+            return;
+        }
+        await init();
+    } else if (event.ctrlKey && event.key === 'o') {
+        const filepath = await window.electron.selectFile();
+        if (!filepath) {
+            return;
+        }
+        await init(filepath);
+    } else if (event.ctrlKey && event.key === 'e') {
+        if (document.getElementById('export-data').disabled) {
+            return;
+        }
+        else if (!filesAndFolders) {
+            sendalert('No data to export');
+        }
+        const result = await window.electron.exportData(filesAndFolders);
+        if (result) {
+            datafile = result;
+            sendalert(`Data exported successfully to ${datafile}`);
+        } else {
+            console.error('Error exporting data');
+            sendalert('Error exporting data');
+        }
+    } else if (event.ctrlKey && event.key === 'r') {
+        if (filesAndFolders.path) {
+            localStorage.setItem('path', filesAndFolders.path);
+        } else {
+            localStorage.setItem('path', folderPath);
+        }
+        location.reload();
+    }
+
+});
+
+document.getElementById('export-data').disabled = true;
+
 if (localStorage.getItem('path')) {
-    folderPath = localStorage.getItem('path');
+    file = localStorage.getItem('path');
     localStorage.clear();
-    init();
+    if (electron.isFile(file, '')) {
+        init(file);
+    }
+    else {
+        folderPath = file;
+        init();
+    }
 }
 
 // TODO:
-// Drag-and-drop file/folder support --- TEST ON WINDOWS BECUASE NOT WORKING HERE
+// on title bar add working exit minimize and maximize buttons
+// make app look better with differnt sizes
+// add image to app
 // add more data analytics to the chart
-// Progress bar for large scans
+// Progress bar for large scans --- tell the use when the files are being added to the filesandfolders cuz this can take a while if the files are big boys -- also add it to the app icon at the bottom used in mainly windows
 // open button to open file in default app
+// rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
+// add windows support
