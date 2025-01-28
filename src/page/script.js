@@ -376,8 +376,13 @@ async function init(f) {
         checkbox.disabled = true;
     });
     
-    
     if (f) {
+        const isfile = await window.electron.isFile(f, '');
+        if (!isfile) {
+            console.log('Selecting a file, choose a folder')
+            sendalert('Please use the "Select Folder" button to select a folder');
+            return;
+        }
         document.getElementById('export-data').disabled = false;
         filecount.innerHTML = 0;
         linecount.innerHTML = 0;
@@ -406,7 +411,6 @@ async function init(f) {
 
         const totalItems = filesAndFolders.length;
         const chunkSize = 1500;
-
 
         if (totalItems > chunkSize) {
             for (let i = 0; i < totalItems; i += chunkSize) {
@@ -698,10 +702,7 @@ document.getElementById('export-data').disabled = true;
 })();
 
 // TODO:
-// make app look better with differnt sizes --- if vertical not enugh space add a scroll bar for the whole app --- make the tree bit size draggable --- make the pie chart and stats be smaller depending on space or bigger
 // add more data analytics to the chart
 // Progress bar for large scans --- tell the use when the files are being added to the filesandfolders cuz this can take a while if the files are big boys -- also add it to the app icon at the bottom used in mainly windows
-// open button to open file in default app
 // rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
 // add windows support --- check icon works   • default Electron icon is used  reason=application icon is not set
-// when opening a file and clicking on a dir account for this
