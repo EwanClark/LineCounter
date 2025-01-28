@@ -14,28 +14,16 @@ app.on('ready', () => {
             contextIsolation: true,
         },
         frame: false,
+        icon: path.join('assets/icons/32x32/icon.png'),
     });
 
     mainWindow.loadFile('src/page/index.html');
 });
 
-// const menu = new Menu();
-
-// menu.append(new MenuItem({
-//   label: 'Electron',
-//   submenu: [{
-//     role: 'help',
-//     accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Alt+Shift+I',
-//     click: () => { console.log('Electron rocks!') }
-//   }]
-// }))
-
-// Menu.setApplicationMenu(menu);
-
 function getFileExtension(file) {
     const segments = file.split(path.sep); // Split path into segments by separator
     const extname = path.extname(file).toLowerCase(); // Get file extension
-    
+
     // Loop through the segments to find the first hidden directory (starting with a '.')
     for (let segment of segments) {
         if (segment.startsWith('.')) {
@@ -237,4 +225,20 @@ ipcMain.handle('filePath', async (_, fileName) => {
         console.error('Error resolving file path:', err);
         throw err;
     }
+});
+
+ipcMain.handle('windowMinimize', () => {
+    mainWindow.minimize();
+});
+
+ipcMain.handle('windowMaximize', () => {
+    if (mainWindow.isMaximized()) {
+        mainWindow.restore();
+    } else {
+        mainWindow.maximize();
+    }
+});
+
+ipcMain.handle('windowExit', () => {
+    mainWindow.close();
 });

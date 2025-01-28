@@ -48,10 +48,8 @@ header h1 {
 }
 
 button {
-    min-width: 135px;
-    max-width: 135px;
-    min-height: 40px;
-    max-height: 40px;
+    width: 135px;
+    height: 40px;
     background-color: #007bff;
     color: white;
     border: none;
@@ -79,7 +77,7 @@ button:disabled {
 }
 
 .right-buttons {
-    padding-right: 100px;
+    padding-right: 10px;
     display: flex;
     justify-content: flex-end;
 }
@@ -88,6 +86,44 @@ button:disabled {
     display: flex;
     align-items: center;
     margin-right: auto;
+}
+
+#windows-buttons {
+    display: flex;
+    flex-direction: row; /* Ensure items are arranged horizontally */
+    align-items: center; /* Vertically center the buttons within the container */
+    justify-content: flex-start; /* Align buttons to the start of the row */
+    gap: 5px; /* Add spacing between the buttons */
+    padding: 0; /* Remove any default padding */
+    margin: 0; /* Remove any default margin */
+    height: 40px; /* Define a consistent height for the container */
+    overflow: hidden; /* Prevent any unexpected overflow */
+}
+
+
+#window-buttons button {
+    width: 30px;
+    height: 30px;
+    background-size: contain; /* Ensure the icon fits within the button */
+    background-repeat: no-repeat; /* Prevent tiling */
+    background-position: center; /* Center the icon */
+    border: none; /* Remove default button border */
+    border-radius: 4px; /* Optional for rounded corners */
+    cursor: pointer; /* Change the cursor to a pointer for interactivity */
+    background-color: transparent; /* Remove background color */
+    transition: transform 0.2s, background-color 0.3s; /* Add a hover effect */
+}
+
+#minimize {
+    background-image: url('../../assets/icons/64x64/minimize.png');
+}
+
+#maximize {
+    background-image: url('../../assets/icons/64x64/maximize.png');
+}
+
+#exit {
+    background-image: url('../../assets/icons/64x64/exit.png');
 }
 
 #select-file,

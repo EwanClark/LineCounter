@@ -13,6 +13,7 @@ var filesAndFolders;
 var piedata = {};
 var typeofchart = 'lines';
 var legend = false;
+var pieChart;
 
 // Function to show an alert
 function sendalert(message) {
@@ -298,8 +299,6 @@ async function arfile(itemPath, isChecked, itemType) {
         console.error(`Error processing item: ${itemPath}`, error);
     }
 }
-
-let pieChart; // Declare a variable to hold the chart instance
 
 function updatepiechart(data) {
     const ctx = document.getElementById('pie-chart').getContext('2d');
@@ -666,8 +665,20 @@ document.addEventListener('keydown', async (event) => {
         }
         location.reload();
     }
-
 });
+
+document.getElementById('exit').addEventListener('click', () => {
+    window.electron.windowExit();
+});
+
+document.getElementById('maximize').addEventListener('click', () => {
+    window.electron.windowMaximize();
+});
+
+document.getElementById('minimize').addEventListener('click', () => {
+    window.electron.windowMinimize();
+});
+
 
 document.getElementById('export-data').disabled = true;
 
@@ -684,11 +695,9 @@ if (localStorage.getItem('path')) {
 }
 
 // TODO:
-// on title bar add working exit minimize and maximize buttons
 // make app look better with differnt sizes
-// add image to app
 // add more data analytics to the chart
 // Progress bar for large scans --- tell the use when the files are being added to the filesandfolders cuz this can take a while if the files are big boys -- also add it to the app icon at the bottom used in mainly windows
 // open button to open file in default app
 // rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
-// add windows support
+// add windows support --- check icon works.

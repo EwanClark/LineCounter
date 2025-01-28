@@ -14,5 +14,8 @@ contextBridge.exposeInMainWorld('electron', {
     showFilePath: (filePath) => {
         const path = webUtils.getPathForFile(filePath);
         return path;
-    }
+    },
+    windowExit: () => ipcRenderer.invoke('windowExit'),
+    windowMinimize: () => ipcRenderer.invoke('windowMinimize'),
+    windowMaximize: () => ipcRenderer.invoke('windowMaximize'),
 });
