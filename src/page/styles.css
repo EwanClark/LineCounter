@@ -111,7 +111,7 @@ button:disabled {
     border-radius: 4px; /* Optional for rounded corners */
     cursor: pointer; /* Change the cursor to a pointer for interactivity */
     background-color: transparent; /* Remove background color */
-    transition: transform 0.2s, background-color 0.3s; /* Add a hover effect */
+    transition: transform 0.2s; /* Add a hover effect */
 }
 
 #minimize {

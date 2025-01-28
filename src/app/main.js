@@ -169,6 +169,7 @@ ipcMain.handle('isFile', async (_, filePath, folderPath) => {
     try {
         if (folderPath) {
             filePath = path.join(folderPath, filePath);
+            console.log(filePath)
         }
         return fs.statSync(filePath).isFile();
     } catch (error) {

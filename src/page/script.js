@@ -161,6 +161,7 @@ async function updatestats(a, f) {
         }
         else {
             fullfilepath = folderPath + '/' + f;
+            // might need to check for windows compatablility with +'\\'+f
         }
 
         if (isFile === false) {
@@ -675,29 +676,32 @@ document.getElementById('maximize').addEventListener('click', () => {
     window.electron.windowMaximize();
 });
 
-document.getElementById('minimize').addEventListener('click', () => {
+document.getElementById('minimize').addEventListener('click', async () => {
     window.electron.windowMinimize();
 });
 
-
 document.getElementById('export-data').disabled = true;
 
-if (localStorage.getItem('path')) {
-    file = localStorage.getItem('path');
-    localStorage.clear();
-    if (electron.isFile(file, '')) {
-        init(file);
+(async () => {
+    if (localStorage.getItem('path')) {
+        const file = localStorage.getItem('path');
+        localStorage.clear();
+        const isfile = await window.electron.isFile(file, '');
+        console.log(isfile);
+        if (isfile) {
+            await init(file);
+        } else {
+            folderPath = file;
+            await init();
+        }
     }
-    else {
-        folderPath = file;
-        init();
-    }
-}
+})();
 
 // TODO:
-// make app look better with differnt sizes
+// make app look better with differnt sizes --- if vertical not enugh space add a scroll bar for the whole app --- make the tree bit size draggable --- make the pie chart and stats be smaller depending on space or bigger
 // add more data analytics to the chart
 // Progress bar for large scans --- tell the use when the files are being added to the filesandfolders cuz this can take a while if the files are big boys -- also add it to the app icon at the bottom used in mainly windows
 // open button to open file in default app
 // rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
-// add windows support --- check icon works.
+// add windows support --- check icon works   • default Electron icon is used  reason=application icon is not set
+// when opening a file and clicking on a dir account for this

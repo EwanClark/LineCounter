@@ -22,11 +22,8 @@
     "appId": "com.example.linecounter",
     "productName": "Line Counter",
     "files": [
-      "./src/app/main.js",
-      "./src/app/preload.js",
-      "./src/page/index.html",
-      "./src/page/script.js",
-      "./src/page/styles.css"
+      "./src/",
+      "./assets/"
     ],
     "directories": {
       "output": "dist"
