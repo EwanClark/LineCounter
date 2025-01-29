@@ -32,6 +32,7 @@
         ],
         "directories": {
             "output": "dist"
-        }
+        },
+        "icon": "./assets/icons/32x32/icon.ico"
     }
 }
