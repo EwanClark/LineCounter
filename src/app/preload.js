@@ -17,5 +17,4 @@ contextBridge.exposeInMainWorld('electron', {
     },
     windowExit: () => ipcRenderer.invoke('windowExit'),
     windowMinimize: () => ipcRenderer.invoke('windowMinimize'),
-    windowMaximize: () => ipcRenderer.invoke('windowMaximize'),
 });

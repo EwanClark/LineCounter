@@ -38,6 +38,10 @@ header h1 {
     flex-shrink: 0;
 }
 
+header button {
+    -webkit-app-region: no-drag;
+}
+
 #currentfolder {
     flex-grow: 1;
     color: #e0e0e0;
@@ -116,10 +120,6 @@ button:disabled {
 
 #minimize {
     background-image: url('../../assets/icons/64x64/minimize.png');
-}
-
-#maximize {
-    background-image: url('../../assets/icons/64x64/maximize.png');
 }
 
 #exit {

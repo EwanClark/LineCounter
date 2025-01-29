@@ -231,14 +231,6 @@ ipcMain.handle('windowMinimize', () => {
     mainWindow.minimize();
 });
 
-ipcMain.handle('windowMaximize', () => {
-    if (mainWindow.isMaximized()) {
-        mainWindow.restore();
-    } else {
-        mainWindow.maximize();
-    }
-});
-
 ipcMain.handle('windowExit', () => {
     mainWindow.close();
 });

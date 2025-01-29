@@ -732,10 +732,6 @@ document.getElementById('exit').addEventListener('click', () => {
     window.electron.windowExit();
 });
 
-document.getElementById('maxamize').addEventListener('click', () => {
-    window.electron.windowMaximize();
-});
-
 document.getElementById('maximize').addEventListener('click', async () => {
     window.electron.windowMinimize();
 });
@@ -757,6 +753,7 @@ document.getElementById('export-data').disabled = true;
 })();
 
 // TODO:
+// BUG: cant click any buttons on header when not in full screen
 // make select all and unselect all buttons
 // add more data analytics to the chart
 // rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
