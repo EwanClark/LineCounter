@@ -732,11 +732,11 @@ document.getElementById('exit').addEventListener('click', () => {
     window.electron.windowExit();
 });
 
-document.getElementById('maximize').addEventListener('click', () => {
+document.getElementById('maxamize').addEventListener('click', () => {
     window.electron.windowMaximize();
 });
 
-document.getElementById('minimize').addEventListener('click', async () => {
+document.getElementById('maximize').addEventListener('click', async () => {
     window.electron.windowMinimize();
 });
 
@@ -761,3 +761,4 @@ document.getElementById('export-data').disabled = true;
 // add more data analytics to the chart
 // rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
 // add windows support --- check icon works   • default Electron icon is used  reason=application icon is not set
+// check for spelling mistakes
