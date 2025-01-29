@@ -753,9 +753,8 @@ document.getElementById('export-data').disabled = true;
 })();
 
 // TODO:
-// BUG: cant click any buttons on header when not in full screen
 // make select all and unselect all buttons
 // add more data analytics to the chart
 // rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
-// add windows support --- check icon works   • default Electron icon is used  reason=application icon is not set
+// add windows support
 // check for spelling mistakes

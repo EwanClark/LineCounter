@@ -14,7 +14,7 @@ app.on('ready', () => {
             contextIsolation: true,
         },
         frame: false,
-        icon: path.join('assets/icons/32x32/icon.png'),
+        icon: path.join('assets/icons/32x32/icon.ico'),
     });
 
     mainWindow.loadFile('src/page/index.html');
