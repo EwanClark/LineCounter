@@ -1,32 +1,37 @@
 {
-  "name": "linecounter",
-  "version": "1.0.0",
-  "main": "./src/app/main.js",
-  "scripts": {
-    "start": "electron .",
-    "build": "electron-builder"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "description": "",
-  "devDependencies": {
-    "electron": "^34.0.1",
-    "electron-builder": "^25.1.8"
-  },
-  "dependencies": {
-    "readline": "^1.3.0"
-  },
-  "build": {
-    "appId": "com.example.linecounter",
-    "productName": "Line Counter",
-    "files": [
-      "./src/",
-      "./assets/"
-    ],
-    "directories": {
-      "output": "dist"
+    "name": "linecounter",
+    "version": "1.0.0",
+    "main": "./src/app/main.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": ["line", "counter", "electron"],
+    "author": "Ewan Clark ",
+    "type": "commonjs",
+    "description": "A simple line counter application built with Electron.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ewanclark/linecounter.git"
+    },
+    "homepage": "https://github.com/ewanclark/linecounter#readme",
+    "devDependencies": {
+        "electron": "34.0.1",
+        "electron-builder": "26.0.0"
+    },
+    "dependencies": {
+        "readline": "1.3.0"
+    },
+    "build": {
+        "appId": "com.example.linecounter",
+        "productName": "Line Counter",
+        "files": [
+            "./src/",
+            "./assets/"
+        ],
+        "directories": {
+            "output": "dist"
+        }
     }
-  }
 }

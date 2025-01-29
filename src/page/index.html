@@ -33,7 +33,10 @@
                 <button id="maximize" title="Maximize"></button>
                 <button id="exit" title="Exit"></button>
             </div>
-        </header>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+        </header>     
         <main>
             <aside id="folder-tree">
                 <h2>Files & Folders</h2>
@@ -43,7 +46,7 @@
             </aside>
             <section id="content">
                 <div id="totals">
-                    <h2>Totals</h2>
+                    <h2 id="total-header">Totals</h2>
                     <div class="total-item">
                         <span class="label">Files:</span> <span class="value" id="filecount">0</span>
                     </div>
