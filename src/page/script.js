@@ -172,7 +172,7 @@ async function updatestats(a, f, stats) {
     } else {
         // Check if we're dealing with a single file object or a file path
         const isFileObject = typeof f === 'object' && f !== null && 'path' in f;
-        
+
         // If it's a file object, use its properties directly
         if (isFileObject) {
             const fileData = f;
@@ -192,7 +192,7 @@ async function updatestats(a, f, stats) {
                 wordcount.innerHTML = currentwordcount + words;
                 charactercount.innerHTML = currentcharactercount + characters;
                 filecount.innerHTML = currentfilecount + 1;
-                
+
                 if (extension in piedata) {
                     if (typeofchart === 'lines') piedata[extension] += lines;
                     else if (typeofchart === 'files') piedata[extension] += 1;
@@ -210,12 +210,14 @@ async function updatestats(a, f, stats) {
                 wordcount.innerHTML = currentwordcount - words;
                 charactercount.innerHTML = currentcharactercount - characters;
                 filecount.innerHTML = currentfilecount - 1;
-                
+
                 if (typeofchart === 'lines') piedata[extension] -= lines;
-                else piedata[extension] -= 1;
+                else if (typeofchart === 'files') piedata[extension] -= 1;
+                else if (typeofchart === 'words') piedata[extension] -= words;
+                else if (typeofchart === 'characters') piedata[extension] -= characters;
                 updatepiechart(piedata);
             }
-            
+
             if (stats) {
                 processfilecount += 1;
                 processpercentage = processfilecount / realfilecount * 100;
@@ -527,17 +529,6 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
             displaylineorfile.innerHTML = 'Showing Characters Per File Extension:';
         }
 
-        // check all files and folders
-        if (!filesAndFolders.path) {
-            filesAndFolders.forEach(item => {
-                itemname = item.path;
-                document.getElementById(itemname).checked = true;
-            });
-        }
-        else {
-            document.getElementById(filesAndFolders.path).checked = true;
-        }
-
         piedata = {};
 
         // stop radio buttons from being pressed when updating
@@ -549,38 +540,84 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
         document.getElementById('select-file').disabled = true;
         document.getElementById('select-all').disabled = true;
         document.getElementById('deselect-all').disabled = true;
-    
 
-        if (filesAndFolders.path) {
-            filecount.innerHTML = 0;
-            linecount.innerHTML = 0;
-            wordcount.innerHTML = 0;
-            charactercount.innerHTML = 0;
-            processfilecount = 0;
-            await updatestats(true, filesAndFolders, true);
-        }
-        else {
-            const totalItems = filesAndFolders.length;
-            const chunkSize = 1500;
+        const listItems = treeView.getElementsByTagName('li');
 
-            filecount.innerHTML = 0;
-            linecount.innerHTML = 0;
-            wordcount.innerHTML = 0;
-            charactercount.innerHTML = 0;
+        for (let item of listItems) {
+            const checkbox = item.getElementsByTagName('input')[0];
+            const isfile = await window.electron.isFile(folderPath, checkbox.id);
+            if (checkbox.checked && isfile) {
+                if (filesAndFolders.path) {
+                    const extension = await window.electron.getFileExtension(checkbox.id);
+                    if (extension in piedata) {
+                        if (typeofchart === 'lines') {
 
-            processfilecount = 0;
-            if (totalItems > chunkSize) {
-                for (let i = 0; i < totalItems; i += chunkSize) {
-                    const chunk = filesAndFolders.slice(i, i + chunkSize);
-                    console.log("chunk", chunk);
-                    await updatestats(true, chunk, true); // Update stats for the current chunk
+                            piedata[extension] += filesAndFolders.lines;
+                        }
+                        else if (typeofchart === 'files') {
+                            piedata[extension] += 1;
+                        }
+                        else if (typeofchart === 'words') {
+                            piedata[extension] += filesAndFolders.words;
+                        }
+                        else if (typeofchart === 'characters') {
+                            piedata[extension] += filesAndFolders.characters;
+                        }
+                    } else {
+                        if (typeofchart === 'lines') {
+                            piedata[extension] = filesAndFolders.lines;
+                        }
+                        else if (typeofchart === 'files') {
+                            piedata[extension] = 1;
+                        }
+                        else if (typeofchart === 'words') {
+                            piedata[extension] = filesAndFolders.words;
+                        }
+                        else if (typeofchart === 'characters') {
+                            piedata[extension] = filesAndFolders.characters;
+                        }
+                    }
+                } else {
+                    const extension = await window.electron.getFileExtension(checkbox.id);
+                    console.log(extension);
+                    if (extension in piedata) {
+                        if (typeofchart === 'lines') {
+                            const lines = filesAndFolders.find(item => item.path === checkbox.id).lines;
+                            piedata[extension] += lines;
+                        }
+                        else if (typeofchart === 'files') {
+                            piedata[extension] += 1;
+                        }
+                        else if (typeofchart === 'words') {
+                            const words = filesAndFolders.find(item => item.path === checkbox.id).words;
+                            piedata[extension] += words;
+                        }
+                        else if (typeofchart === 'characters') {
+                            const characters = filesAndFolders.find(item => item.path === checkbox.id).characters;
+                            piedata[extension] += characters;
+                        }
+                    } else {
+                        if (typeofchart === 'lines') {
+                            const lines = filesAndFolders.find(item => item.path === checkbox.id).lines;
+                            piedata[extension] = lines;
+                        }
+                        else if (typeofchart === 'files') {
+                            piedata[extension] = 1;
+                        }
+                        else if (typeofchart === 'words') {
+                            const words = filesAndFolders.find(item => item.path === checkbox.id).words;
+                            piedata[extension] = words;
+                        }
+                        else if (typeofchart === 'characters') {
+                            const characters = filesAndFolders.find(item => item.path === checkbox.id).characters;
+                            piedata[extension] = characters;
+                        }
+                    }
                 }
             }
-            else {
-                await updatestats(true, filesAndFolders, true);
-            }
-            // re-enable radio buttons
         }
+        updatepiechart(piedata);
+
         document.querySelectorAll('input[name="option"]').forEach(button => {
             button.disabled = false;
         });
@@ -589,7 +626,7 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
         document.getElementById('select-file').disabled = false;
         document.getElementById('select-all').disabled = false;
         document.getElementById('deselect-all').disabled = false;
-    
+
     });
 });
 
@@ -783,8 +820,4 @@ document.getElementById('deselect-all').addEventListener('click', async () => {
     }
 });
 
-// TODO:
-// rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
-// add windows support --- icon check
-
-// check for spelling mistakes
+// check windows

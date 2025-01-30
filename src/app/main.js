@@ -238,3 +238,7 @@ ipcMain.handle('windowExit', () => {
 ipcMain.handle('joinPaths', (_, ...paths) => {
     return path.join(...paths);
 });
+
+ipcMain.handle('getFileExtension', (_, file) => {
+    return getFileExtension(file);
+});

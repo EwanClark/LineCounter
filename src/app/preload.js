@@ -18,4 +18,5 @@ contextBridge.exposeInMainWorld('electron', {
     windowExit: () => ipcRenderer.invoke('windowExit'),
     windowMinimize: () => ipcRenderer.invoke('windowMinimize'),
     joinPaths: (...paths) => ipcRenderer.invoke('joinPaths', ...paths),
+    getFileExtension: (filePath) => ipcRenderer.invoke('getFileExtension', filePath),
 });
