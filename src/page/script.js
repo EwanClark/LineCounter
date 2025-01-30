@@ -150,7 +150,6 @@ function updateProgressBar(progress) {
 async function updatestats(a, f, stats) {
     if (Array.isArray(f)) {
         for (const file of f) {
-            // If it's a folder and hasn't been processed yet
             if (file.type === 'folder') {
                 const children = getchildren(file.path);
                 for (const child of children) {
@@ -166,63 +165,21 @@ async function updatestats(a, f, stats) {
                     }
                 }
             }
-            // If it's a file, process it
             if (file.type === 'file') {
                 await updatestats(a, file.path, stats);
             }
         }
     } else {
-        // check if it is a single file or a folder scanning
-
-        // Check if the path is a file
-        if (filesAndFolders.path) {
-            var isFile = true;
-        }
-        else {
-            var isFile = await window.electron.isFile(folderPath, f);
-        }
-
-        if (folderPath === undefined) {
-            var fullfilepath = f;
-        }
-        else {
-            var fullfilepath = await window.electron.joinPaths(folderPath, f);
-        }
-
-        if (isFile === false) {
-            // If it's a folder, get and process all its children
-            const children = getchildren(fullfilepath);
-            await updatestats(a, children, stats);
-        } else {
-            // If it's a file, count lines, words, and characters
-            if (filesAndFolders.path) {
-                var fileData = filesAndFolders;
-                var lines = filesAndFolders.lines;
-                var words = filesAndFolders.words;
-                var characters = filesAndFolders.characters;
-                var extension = filesAndFolders.fileExtension;
-            }
-            else {
-                var fileData = filesAndFolders.find(item => item.path === f);
-                var lines = filesAndFolders.find(item => item.path === f).lines;
-                var words = filesAndFolders.find(item => item.path === f).words;
-                var characters = filesAndFolders.find(item => item.path === f).characters;
-                var extension = filesAndFolders.find(item => item.path === f).fileExtension;
-            }
-            if (fileData && !fileData.lines) {
-                fileData.lines = lines;
-                fileData.words = words;
-                fileData.characters = characters;
-
-                // Update the stats span
-                const statsSpan = document.querySelector(`label[for="${f}"] .stats`);
-                if (statsSpan) {
-                    statsSpan.textContent = `(${lines} lines, ${words} words, ${characters} characters)`;
-                }
-            } else if (!fileData) {
-                sendalert(`Path not found: ${f}`);
-                console.error(`Path not found: ${f}`);
-            }
+        // Check if we're dealing with a single file object or a file path
+        const isFileObject = typeof f === 'object' && f !== null && 'path' in f;
+        
+        // If it's a file object, use its properties directly
+        if (isFileObject) {
+            const fileData = f;
+            const lines = fileData.lines;
+            const words = fileData.words;
+            const characters = fileData.characters;
+            const extension = fileData.fileExtension;
 
             // Update counts
             const currentlinecount = parseInt(linecount.innerHTML) || 0;
@@ -234,46 +191,68 @@ async function updatestats(a, f, stats) {
                 linecount.innerHTML = currentlinecount + lines;
                 wordcount.innerHTML = currentwordcount + words;
                 charactercount.innerHTML = currentcharactercount + characters;
-                filecount.innerHTML = currentfilecount + 1; // Increment file count
+                filecount.innerHTML = currentfilecount + 1;
+                
                 if (extension in piedata) {
-                    if (typeofchart === 'lines') {
-                        piedata[extension] += lines;
-                    } else if (typeofchart === 'files') {
-                        piedata[extension] += 1;
-                    } else if (typeofchart === 'words') {
-                        piedata[extension] += words;
-                    } else if (typeofchart === 'characters') {
-                        piedata[extension] += characters;
-                    }
+                    if (typeofchart === 'lines') piedata[extension] += lines;
+                    else if (typeofchart === 'files') piedata[extension] += 1;
+                    else if (typeofchart === 'words') piedata[extension] += words;
+                    else if (typeofchart === 'characters') piedata[extension] += characters;
                 } else {
-                    if (typeofchart === 'lines') {
-                        piedata[extension] = lines;
-                    } else if (typeofchart === 'files') {
-                        piedata[extension] = 1;
-                    } else if (typeofchart === 'words') {
-                        piedata[extension] = words;
-                    } else if (typeofchart === 'characters') {
-                        piedata[extension] = characters;
-                    }
+                    if (typeofchart === 'lines') piedata[extension] = lines;
+                    else if (typeofchart === 'files') piedata[extension] = 1;
+                    else if (typeofchart === 'words') piedata[extension] = words;
+                    else if (typeofchart === 'characters') piedata[extension] = characters;
                 }
                 updatepiechart(piedata);
             } else {
                 linecount.innerHTML = currentlinecount - lines;
                 wordcount.innerHTML = currentwordcount - words;
                 charactercount.innerHTML = currentcharactercount - characters;
-                filecount.innerHTML = currentfilecount - 1; // Decrement file count
-                if (typeofchart === 'lines') {
-                    piedata[extension] -= lines;
-                }
-                else {
-                    piedata[extension] -= 1;
-                }
+                filecount.innerHTML = currentfilecount - 1;
+                
+                if (typeofchart === 'lines') piedata[extension] -= lines;
+                else piedata[extension] -= 1;
                 updatepiechart(piedata);
             }
+            
             if (stats) {
                 processfilecount += 1;
                 processpercentage = processfilecount / realfilecount * 100;
                 updateProgressBar(processpercentage);
+            }
+        } else {
+            // We're dealing with a file path
+            const isFile = await window.electron.isFile(folderPath, f);
+            const fullfilepath = folderPath ? await window.electron.joinPaths(folderPath, f) : f;
+
+            if (!isFile) {
+                const children = getchildren(fullfilepath);
+                await updatestats(a, children, stats);
+            } else {
+                let fileData;
+                if (Array.isArray(filesAndFolders)) {
+                    fileData = filesAndFolders.find(item => item.path === f);
+                } else {
+                    // If filesAndFolders is a single file object
+                    fileData = filesAndFolders.path === f ? filesAndFolders : null;
+                }
+
+                if (!fileData) {
+                    sendalert(`Path not found: ${f}`);
+                    console.error(`Path not found: ${f}`);
+                    return;
+                }
+
+                if (!fileData.lines) {
+                    // Update the stats span
+                    const statsSpan = document.querySelector(`label[for="${f}"] .stats`);
+                    if (statsSpan) {
+                        statsSpan.textContent = `(${fileData.lines} lines, ${fileData.words} words, ${fileData.characters} characters)`;
+                    }
+                }
+
+                await updatestats(a, fileData, stats);
             }
         }
     }
@@ -423,6 +402,7 @@ async function init(f) {
         wordcount.innerHTML = 0;
         charactercount.innerHTML = 0;
         piedata = {};
+        folderPath = '';
 
         const file = await window.electron.readFile(f);
 
@@ -804,8 +784,6 @@ document.getElementById('deselect-all').addEventListener('click', async () => {
 });
 
 // TODO:
-// clear legend after selecting a new file or folder
-// add more data analytics to the chart
 // rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
 // add windows support --- icon check
 

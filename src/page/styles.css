@@ -1,9 +1,11 @@
+/* Reset default margin, padding, and set box-sizing to border-box for all elements */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Set body background color, text color, and center content vertically and horizontally */
 body {
     background-color: #121212;
     color: #e0e0e0;
@@ -15,6 +17,7 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+/* Main container for the application, using flexbox for layout */
 #app {
     display: flex;
     flex-direction: column;
@@ -22,6 +25,7 @@ body {
     height: 100%;
 }
 
+/* Style for the header, making it draggable and adding padding and background color */
 header {
     -webkit-app-region: drag;
     display: flex;
@@ -31,6 +35,7 @@ header {
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+/* Style for the header title, setting font size and color */
 header h1 {
     font-size: 2em;
     color: #e0e0e0;
@@ -38,10 +43,12 @@ header h1 {
     flex-shrink: 0;
 }
 
+/* Style for buttons in the header, making them non-draggable */
 header button {
     -webkit-app-region: no-drag;
 }
 
+/* Style for the current folder display in the header */
 #currentfolder {
     flex-grow: 1;
     color: #e0e0e0;
@@ -51,6 +58,7 @@ header button {
     text-overflow: ellipsis;
 }
 
+/* General button styles */
 button {
     background-color: #007bff;
     color: white;
@@ -61,82 +69,94 @@ button {
     transition: background-color 0.3s, transform 0.2s;
 }
 
+/* Specific styles for header buttons */
 header button {
     width: 135px;
     height: 40px;
 }
 
+/* Hover effect for buttons */
 button:hover {
     background-color: #0056b3;
     transform: translateY(-2px);
 }
 
+/* Focus effect for buttons */
 button:focus {
     outline: none;
 }
 
+/* Disabled state for buttons */
 button:disabled {
-    background-color: #888;  /* Grey background */
-    color: #ccc;  /* Lighter text color */
-    cursor: not-allowed;  /* Change the cursor to indicate the button is disabled */
-    opacity: 0.6;  /* Reduce opacity to show it's disabled */
+    background-color: #888;
+    color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
+/* Container for right-aligned buttons in the header */
 .right-buttons {
     padding-right: 10px;
     display: flex;
     justify-content: flex-end;
 }
 
+/* Container for left-aligned buttons in the header */
 .left-buttons {
     display: flex;
     align-items: center;
     margin-right: auto;
 }
 
+/* Container for window control buttons */
 #windows-buttons {
     display: flex;
-    flex-direction: row; /* Ensure items are arranged horizontally */
-    align-items: center; /* Vertically center the buttons within the container */
-    justify-content: flex-start; /* Align buttons to the start of the row */
-    gap: 5px; /* Add spacing between the buttons */
-    padding: 0; /* Remove any default padding */
-    margin: 0; /* Remove any default margin */
-    height: 40px; /* Define a consistent height for the container */
-    overflow: hidden; /* Prevent any unexpected overflow */
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    padding: 0;
+    margin: 0;
+    height: 40px;
+    overflow: hidden;
 }
 
-
+/* Style for window control buttons */
 #window-buttons button {
     width: 30px;
     height: 30px;
-    background-size: contain; /* Ensure the icon fits within the button */
-    background-repeat: no-repeat; /* Prevent tiling */
-    background-position: center; /* Center the icon */
-    border: none; /* Remove default button border */
-    border-radius: 4px; /* Optional for rounded corners */
-    cursor: pointer; /* Change the cursor to a pointer for interactivity */
-    background-color: transparent; /* Remove background color */
-    transition: transform 0.2s; /* Add a hover effect */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: transparent;
+    transition: transform 0.2s;
 }
 
+/* Specific styles for minimize button */
 #minimize {
     background-image: url('../../assets/icons/64x64/minimize.png');
 }
 
+/* Specific styles for exit button */
 #exit {
     background-image: url('../../assets/icons/64x64/exit.png');
 }
 
+/* Margin adjustments for select file and folder buttons */
 #select-file,
 #select-folder {
     margin-left: 20px;
 }
 
+/* Margin adjustment for reload button */
 #reload {
     margin-right: 20px;
 }
 
+/* Main content area styles */
 main {
     display: flex;
     justify-content: flex-start;
@@ -146,6 +166,7 @@ main {
     overflow: hidden;
 }
 
+/* Styles for the folder tree container */
 #folder-tree {
     background-color: #1f1f1f;
     padding: 20px;
@@ -157,15 +178,18 @@ main {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Styles for the folder tree header */
 #folder-tree h2 {
     color: #e0e0e0;
     margin-bottom: 10px;
 }
 
+/* Styles for the tree header container */
 #tree-header {
     display: flex;
 }
 
+/* Styles for buttons in the tree header */
 #tree-header button {
     background-color: transparent;
     border: none;
@@ -176,15 +200,17 @@ main {
     padding: 5px 10px;
 }
 
+/* Margin adjustment for select all button */
 #select-all {
     margin-left: auto;
 }
 
+/* Hover effect for tree header buttons */
 #tree-header button:hover {
     color: #007bff;
 }
 
-
+/* Styles for the search bar */
 #search-bar {
     width: 100%;
     padding: 10px;
@@ -197,11 +223,13 @@ main {
     box-sizing: border-box;
 }
 
+/* Styles for the tree view container */
 #tree-view {
     list-style: none;
     padding-left: 10px;
 }
 
+/* Styles for individual items in the tree view */
 #tree-view li {
     margin-bottom: 10px;
     display: flex;
@@ -209,6 +237,7 @@ main {
     color: #b0b0b0;
 }
 
+/* Styles for checkboxes in the tree view */
 #tree-view li input[type="checkbox"] {
     background-color: #2c2c2c;
     margin-right: 10px;
@@ -224,17 +253,20 @@ main {
     position: relative;
 }
 
+/* Hover effect for checkboxes in the tree view */
 #tree-view li input[type="checkbox"]:hover {
     background-color: #3a3a3a;
     border-color: #555;
 }
 
+/* Styles for checked state of checkboxes in the tree view */
 #tree-view li input[type="checkbox"]:checked {
     background-color: #007bff;
     border-color: #0056b3;
     position: relative;
 }
 
+/* Styles for the checkmark in checked checkboxes */
 #tree-view li input[type="checkbox"]:checked::after {
     content: '✔';
     font-size: 14px;
@@ -245,19 +277,13 @@ main {
     transform: translate(-50%, -50%);
 }
 
-#tree-view li {
-    font-size: 1em;
-    color: #e0e0e0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
+/* Hover effect for tree view items */
 #tree-view li:hover {
     background-color: #1f1f1f;
     border-radius: 4px;
 }
 
+/* Styles for the main content area */
 #content {
     height: 100%;
     flex-grow: 1;
@@ -268,6 +294,7 @@ main {
     overflow-y: scroll;
 }
 
+/* Styles for the totals container */
 #totals {
     background-color: #2a2a2a;
     padding: 20px 30px;
@@ -277,6 +304,7 @@ main {
     text-align: center;
 }
 
+/* Styles for the totals header */
 #totals h2 {
     color: #ffffff;
     font-size: 2em;
@@ -285,6 +313,7 @@ main {
     letter-spacing: 1px;
 }
 
+/* Styles for individual total items */
 .total-item {
     display: flex;
     justify-content: space-between;
@@ -296,29 +325,34 @@ main {
     font-size: 1.5em;
 }
 
+/* Styles for the label in total items */
 .total-item .label {
     color: #b0b0b0;
     font-weight: bold;
 }
 
+/* Styles for the value in total items */
 .total-item .value {
     color: #007bff;
     font-weight: bold;
     font-size: 1.6em;
 }
 
+/* Hover effect for total items */
 .total-item:hover {
     background-color: #333333;
     transform: scale(1.02);
     transition: 0.2s;
 }
 
+/* Custom scrollbar styles for folder tree and content areas */
 #folder-tree,
 #content {
     scrollbar-width: thin;
     scrollbar-color: #007bff #1e1e1e;
 }
 
+/* Custom scrollbar styles for WebKit browsers */
 #folder-tree::-webkit-scrollbar,
 #content::-webkit-scrollbar {
     width: 12px;
@@ -342,6 +376,7 @@ main {
     background: #0056b3;
 }
 
+/* Ensure scrollbar is always visible in folder tree and content areas */
 #folder-tree {
     -ms-overflow-style: scrollbar;
 }
@@ -350,6 +385,7 @@ main {
     -ms-overflow-style: scrollbar;
 }
 
+/* Styles for modal overlay */
 .modal {
     display: none;
     position: fixed;
@@ -366,6 +402,7 @@ main {
     box-sizing: border-box;
 }
 
+/* Styles for modal content */
 .modal-content {
     background-color: #1e1e1e;
     color: white;
@@ -378,6 +415,7 @@ main {
     font-family: 'Roboto', sans-serif;
 }
 
+/* Styles for modal close button */
 .modal-close {
     position: absolute;
     top: 10px;
@@ -388,6 +426,8 @@ main {
     margin-top: 0;
     padding: 0;
 }
+
+/* Styles for alert OK button */
 #alert-ok {
     background-color: #0056b3;
     color: #fff;
@@ -402,12 +442,14 @@ main {
     font-family: 'Roboto', sans-serif;
 }
 
+/* Container for chart and chart options */
 #chart-container-wrapper {
     display: flex;
     justify-content: space-between;
     gap: 20px;
 }
 
+/* Styles for chart container and chart options container */
 #chart-container-choice,
 #chart-container {
     width: 600px;
@@ -420,18 +462,22 @@ main {
     box-sizing: border-box;
 }
 
+/* Styles for chart container header */
 #chart-container-choice h2 {
     color: #ffffff;
     font-size: 1.8em;
     margin-bottom: 15px;
 }
 
+/* Styles for pie chart */
 #pie-chart {
     width: 500px;
     height: 500px;
-    margin: 0 auto; /* Center the pie chart horizontally */
+    margin: 0 auto;
+    /* Center the pie chart horizontally */
 }
 
+/* Styles for input options and legend containers */
 #input-options,
 #legend {
     display: flex;
@@ -447,10 +493,12 @@ main {
     height: auto;
 }
 
+/* Margin adjustment for legend container */
 #legend {
     margin-top: 20px;
 }
 
+/* Styles for labels in input options and legend containers */
 #input-options label,
 #legend label {
     font-size: 0.9em;
@@ -461,12 +509,15 @@ main {
     flex: 1 1 calc(50% - 20px);
 }
 
+/* Hover effect for labels in input options and legend containers */
 #input-options label:hover,
 #legend label:hover {
     color: #1e88e5;
 }
 
+/* Responsive styles for input options and legend containers */
 @media (max-width: 600px) {
+
     #input-options,
     #legend {
         padding: 15px;
@@ -479,6 +530,7 @@ main {
     }
 }
 
+/* Styles for radio buttons in input options and legend containers */
 #input-options input[type="radio"],
 #legend input[type="radio"] {
     appearance: none;
@@ -495,6 +547,7 @@ main {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* Styles for inner circle of radio buttons */
 #input-options input[type="radio"]::before,
 #legend input[type="radio"]::before {
     content: '';
@@ -509,58 +562,67 @@ main {
     transition: all 0.3s ease;
 }
 
+/* Styles for checked state of radio buttons */
 #input-options input[type="radio"]:checked,
 #legend input[type="radio"]:checked {
     background-color: #4a4a4a;
     border-color: #1e88e5;
 }
 
+/* Styles for inner circle of checked radio buttons */
 #input-options input[type="radio"]:checked::before,
 #legend input[type="radio"]:checked::before {
     transform: translate(-50%, -50%) scale(1);
 }
 
+/* Focus effect for radio buttons */
 #input-options input[type="radio"]:focus,
 #legend input[type="radio"]:focus {
     box-shadow: 0 0 5px rgba(30, 136, 229, 0.6);
     transform: scale(1.2);
 }
 
+/* Hover effect for radio buttons */
 #input-options label:hover input[type="radio"],
 #legend label:hover input[type="radio"] {
     transform: scale(1.2);
 }
 
+/* Disabled state for radio buttons */
 #input-options input[type="radio"]:disabled,
 #legend input[type="radio"]:disabled {
-    background-color: #b0b0b0; /* Light gray background */
-    border-color: #888888; /* Darker gray border */
-    cursor: not-allowed; /* Change cursor to not-allowed */
-    opacity: 0.6; /* Make it less prominent */
+    background-color: #b0b0b0;
+    border-color: #888888;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
+/* Styles for inner circle of disabled radio buttons */
 #input-options input[type="radio"]:disabled::before,
 #legend input[type="radio"]:disabled::before {
-    background-color: #888888; /* Dark gray for inner circle */
+    background-color: #888888;
 }
 
+/* Styles for labels containing disabled radio buttons */
 #input-options label:has(input[type="radio"]:disabled),
 #legend label:has(input[type="radio"]:disabled) {
-    color: #888888; /* Gray out the label */
-    cursor: not-allowed; /* Prevent interactions with label */
+    color: #888888;
+    cursor: not-allowed;
 }
 
+/* Container for progress bar */
 #progress-bar-container {
     display: none;
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 3px; /* Thin progress bar */
+    height: 3px;
     background: rgba(255, 255, 255, 0.2);
     overflow: hidden;
 }
 
+/* Styles for progress bar */
 #progress-bar {
     width: 0%;
     height: 100%;
