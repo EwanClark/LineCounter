@@ -819,5 +819,3 @@ document.getElementById('deselect-all').addEventListener('click', async () => {
         }
     }
 });
-
-// check windows
