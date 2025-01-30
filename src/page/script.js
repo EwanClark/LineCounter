@@ -121,17 +121,25 @@ function getchildren(folder) {
 }
 
 function updateProgressBar(progress) {
+    const progressBarContainer = document.getElementById("progress-bar-container");
+    const displayStyle = window.getComputedStyle(progressBarContainer).display;
     const progressBar = document.getElementById("progress-bar");
     const currentWidth = parseFloat(progressBar.style.width) || 0;
     progress = Math.floor(progress);
+
+    if (displayStyle === "none") {
+        progressBarContainer.style.display = "block"; // or "initial"
+    }
     if (progress > currentWidth) {
         progressBar.style.width = progress + "%";
         document.getElementById("total-header").textContent = `Total   -  ${progress}%`;
         if (progress === 100) {
             const timerId = setTimeout(() => {
+                progressBarContainer.style.display = "none";
                 progressBar.style.width = "0%";
                 document.getElementById("total-header").textContent = `TOTAL`;
                 clearTimeout(timerId);
+
             }, 500);
         }
     }
@@ -149,7 +157,7 @@ async function updatestats(a, f, stats) {
                     const checkbox = document.getElementById(child.path);
                     if (checkbox && !checkbox.checked) {
                         checkbox.checked = true;
-                        const isFile = await window.electron.isFile(child.path, folderPath);
+                        const isFile = await window.electron.isFile(folderPath, child.path);
                         if (isFile) {
                             await updatestats(true, child.path, stats);
                         } else {
@@ -171,15 +179,14 @@ async function updatestats(a, f, stats) {
             var isFile = true;
         }
         else {
-            var isFile = await window.electron.isFile(f, folderPath);
+            var isFile = await window.electron.isFile(folderPath, f);
         }
 
         if (folderPath === undefined) {
-            fullfilepath = f;
+            var fullfilepath = f;
         }
         else {
-            fullfilepath = folderPath + '/' + f;
-            // might need to check for windows compatablility with +'\\'+f
+            var fullfilepath = await window.electron.joinPaths(folderPath, f);
         }
 
         if (isFile === false) {
@@ -263,7 +270,6 @@ async function updatestats(a, f, stats) {
                 }
                 updatepiechart(piedata);
             }
-            console.log(stats);
             if (stats) {
                 processfilecount += 1;
                 processpercentage = processfilecount / realfilecount * 100;
@@ -287,7 +293,7 @@ async function arfile(itemPath, isChecked, itemType) {
                     checkbox.checked = true;
 
                     // Check if the child is a file or folder
-                    const isFile = await window.electron.isFile(child.path, folderPath);
+                    const isFile = await window.electron.isFile(folderPath, child.path);
                     if (isFile) {
                         await updatestats(true, child.path, false); // Process file stats
                     } else {
@@ -305,7 +311,7 @@ async function arfile(itemPath, isChecked, itemType) {
                 if (checkbox && checkbox.checked) {
                     checkbox.checked = false;
 
-                    const isFile = await window.electron.isFile(child.path, folderPath);
+                    const isFile = await window.electron.isFile(folderPath, child.path);
                     if (isFile) {
                         await updatestats(false, child.path, false); // Process file stats
                     } else {
@@ -402,16 +408,16 @@ async function init(f) {
     document.getElementById('export-data').disabled = true;
     document.getElementById('select-folder').disabled = true;
     document.getElementById('select-file').disabled = true;
+    document.getElementById('select-all').disabled = true;
+    document.getElementById('deselect-all').disabled = true;
 
 
     if (f) {
-        const isfile = await window.electron.isFile(f, '');
+        const isfile = await window.electron.isFile('', f);
         if (!isfile) {
-            console.log('Selecting a file, choose a folder')
             sendalert('Please use the "Select Folder" button to select a folder');
             return;
         }
-        document.getElementById('export-data').disabled = false;
         filecount.innerHTML = 0;
         linecount.innerHTML = 0;
         wordcount.innerHTML = 0;
@@ -424,7 +430,7 @@ async function init(f) {
         filesAndFolders = file;
         rendertree(file);
         processfilecount = 0;
-        await updatestats(true, file, true);
+        await updatestats(true, file, false);
     } else if (folderPath) {
         filecount.innerHTML = 0;
         linecount.innerHTML = 0;
@@ -454,12 +460,10 @@ async function init(f) {
             for (let i = 0; i < totalItems; i += chunkSize) {
                 const chunk = filesAndFolders.slice(i, i + chunkSize);
                 console.log("chunk", chunk);
-                console.log('doing it')
                 await updatestats(true, chunk, true); // Update stats for the current chunk
             }
         }
         else {
-            console.log('doing it')
             await updatestats(true, filesAndFolders, true);
         }
     } else {
@@ -476,24 +480,24 @@ async function init(f) {
     document.getElementById('export-data').disabled = false;
     document.getElementById('select-folder').disabled = false;
     document.getElementById('select-file').disabled = false;
+    document.getElementById('select-all').disabled = false;
+    document.getElementById('deselect-all').disabled = false;
+
 }
 
 
 searchBar.addEventListener('input', () => {
     const listItems = treeView.getElementsByTagName('li');
+    const searchText = searchBar.value.toLowerCase();
 
-    searchBar.addEventListener('input', () => {
-        const searchText = searchBar.value.toLowerCase();
-
-        for (let item of listItems) {
-            const itemText = item.textContent.toLowerCase();
-            if (itemText.includes(searchText)) {
-                item.style.display = 'flex'; // Show the item if it matches
-            } else {
-                item.style.display = 'none'; // Hide the item if it doesn't match
-            }
+    for (let item of listItems) {
+        const itemText = item.textContent.toLowerCase();
+        if (itemText.includes(searchText)) {
+            item.style.display = 'flex'; // Show the item if it matches
+        } else {
+            item.style.display = 'none'; // Hide the item if it doesn't match
         }
-    });
+    }
 });
 
 document.getElementById('select-folder').addEventListener('click', async () => {
@@ -563,6 +567,9 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
         document.getElementById('export-data').disabled = true;
         document.getElementById('select-folder').disabled = true;
         document.getElementById('select-file').disabled = true;
+        document.getElementById('select-all').disabled = true;
+        document.getElementById('deselect-all').disabled = true;
+    
 
         if (filesAndFolders.path) {
             filecount.innerHTML = 0;
@@ -600,6 +607,9 @@ document.querySelectorAll('input[name="option"]').forEach(button => {
         document.getElementById('export-data').disabled = false;
         document.getElementById('select-folder').disabled = false;
         document.getElementById('select-file').disabled = false;
+        document.getElementById('select-all').disabled = false;
+        document.getElementById('deselect-all').disabled = false;
+    
     });
 });
 
@@ -741,8 +751,7 @@ document.getElementById('export-data').disabled = true;
     if (localStorage.getItem('path')) {
         const file = localStorage.getItem('path');
         localStorage.clear();
-        const isfile = await window.electron.isFile(file, '');
-        console.log(isfile);
+        const isfile = await window.electron.isFile(folderPath, file);
         if (isfile) {
             await init(file);
         } else {
@@ -752,9 +761,52 @@ document.getElementById('export-data').disabled = true;
     }
 })();
 
+document.getElementById('select-all').addEventListener('click', async () => {
+    const listItems = treeView.getElementsByTagName('li');
+
+    for (let item of listItems) {
+        if (item.style.display !== 'none') {
+            const checkbox = item.getElementsByTagName('input')[0];
+            if (!checkbox.checked) {
+                checkbox.checked = true;
+                if (filesAndFolders.path) {
+                    await arfile(filesAndFolders.path, true, filesAndFolders.type);
+                } else {
+                    const isfile = await window.electron.isFile(folderPath, checkbox.id);
+                    if (isfile) {
+                        await arfile(checkbox.id, true, 'file');
+                    }
+                }
+            }
+        }
+    }
+});
+
+document.getElementById('deselect-all').addEventListener('click', async () => {
+    const listItems = treeView.getElementsByTagName('li');
+
+    for (let item of listItems) {
+        if (item.style.display !== 'none') {
+            const checkbox = item.getElementsByTagName('input')[0];
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                if (filesAndFolders.path) {
+                    await arfile(filesAndFolders.path, false, filesAndFolders.type);
+                } else {
+                    const isfile = await window.electron.isFile(folderPath, checkbox.id);
+                    if (isfile) {
+                        await arfile(checkbox.id, false, 'file');
+                    }
+                }
+            }
+        }
+    }
+});
+
 // TODO:
-// make select all and unselect all buttons
+// clear legend after selecting a new file or folder
 // add more data analytics to the chart
 // rather than calling update stats every time i need to update the pie chart make a function that updates the pie chart and call that function in the option buttons and update stats func
-// add windows support --- icon check if broken 
+// add windows support --- icon check
+
 // check for spelling mistakes

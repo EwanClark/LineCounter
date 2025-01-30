@@ -16,6 +16,9 @@
             <button id="alert-ok">OK</button>
         </div>
     </div>
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
     <div id="app">
         <header>
             <h1>Line Counter</h1>
@@ -32,13 +35,14 @@
                 <button id="minimize" title="Minimize"></button>
                 <button id="exit" title="Exit"></button>
             </div>
-            <div id="progress-bar-container">
-                <div id="progress-bar"></div>
-            </div>
         </header>     
         <main>
             <aside id="folder-tree">
-                <h2>Files & Folders</h2>
+                <div id="tree-header">
+                    <h2>Files & Folders</h2>
+                    <button id="select-all">Select All</button>
+                    <button id="deselect-all">Deselect All</button>
+                </div>                
                 <input type="text" id="search-bar" placeholder="Search files & folders...">
                 <ul id="tree-view">
                 </ul>

@@ -165,7 +165,7 @@ ipcMain.handle('readFolder', async (_, folderPath) => {
 });
 
 
-ipcMain.handle('isFile', async (_, filePath, folderPath) => {
+ipcMain.handle('isFile', async (_, folderPath, filePath) => {
     try {
         if (folderPath) {
             filePath = path.join(folderPath, filePath);
@@ -233,4 +233,8 @@ ipcMain.handle('windowMinimize', () => {
 
 ipcMain.handle('windowExit', () => {
     mainWindow.close();
+});
+
+ipcMain.handle('joinPaths', (_, ...paths) => {
+    return path.join(...paths);
 });

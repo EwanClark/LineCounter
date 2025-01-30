@@ -52,8 +52,6 @@ header button {
 }
 
 button {
-    width: 135px;
-    height: 40px;
     background-color: #007bff;
     color: white;
     border: none;
@@ -61,7 +59,11 @@ button {
     font-size: 1.2em;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-    margin-left: 10px;
+}
+
+header button {
+    width: 135px;
+    height: 40px;
 }
 
 button:hover {
@@ -132,7 +134,7 @@ button:disabled {
 }
 
 #reload {
-    margin-right: 10px;
+    margin-right: 20px;
 }
 
 main {
@@ -157,8 +159,31 @@ main {
 
 #folder-tree h2 {
     color: #e0e0e0;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
+
+#tree-header {
+    display: flex;
+}
+
+#tree-header button {
+    background-color: transparent;
+    border: none;
+    color: #b0b0b0;
+    font-size: 1em;
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 5px 10px;
+}
+
+#select-all {
+    margin-left: auto;
+}
+
+#tree-header button:hover {
+    color: #007bff;
+}
+
 
 #search-bar {
     width: 100%;
@@ -526,6 +551,7 @@ main {
 }
 
 #progress-bar-container {
+    display: none;
     position: absolute;
     bottom: 0;
     left: 0;
